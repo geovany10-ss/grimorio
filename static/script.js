@@ -111,6 +111,49 @@ const sheetAttributesGridEl = document.getElementById('sheet-attributes-grid');
 const sheetSpellsEl = document.getElementById('sheet-spells');
 const sheetHistoryEl = document.getElementById('sheet-history');
 
+// Referências da página de impressão
+const printNomeEl = document.getElementById('print-nome');
+const printClasseNivelEl = document.getElementById('print-classe-nivel');
+const printAntecedenteEl = document.getElementById('print-antecedente');
+const printJogadorEl = document.getElementById('print-jogador');
+const printRacaEl = document.getElementById('print-raca');
+const printTendenciaEl = document.getElementById('print-tendencia');
+const printXpEl = document.getElementById('print-xp');
+const printAttrGridEl = document.getElementById('print-attr-grid');
+const printInspiracaoEl = document.getElementById('print-inspiracao');
+const printProficienciaEl = document.getElementById('print-proficiencia');
+const printSavesEl = document.getElementById('print-saves');
+const printSkillsEl = document.getElementById('print-skills');
+const printPassivaEl = document.getElementById('print-passiva');
+const printCaEl = document.getElementById('print-ca');
+const printIniciativaEl = document.getElementById('print-iniciativa');
+const printDeslocamentoEl = document.getElementById('print-deslocamento');
+const printPvTotalEl = document.getElementById('print-pv-total');
+const printPvAtualEl = document.getElementById('print-pv-atual');
+const printPvTempEl = document.getElementById('print-pv-temp');
+const printHitDiceEl = document.getElementById('print-hit-dice');
+const printDeathSuccessEl = document.getElementById('print-death-success');
+const printDeathFailEl = document.getElementById('print-death-fail');
+const printAttacksEl = document.getElementById('print-attacks');
+const printEquipmentEl = document.getElementById('print-equipment');
+const printTraitsEl = document.getElementById('print-traits');
+const printIdealsEl = document.getElementById('print-ideals');
+const printBondsEl = document.getElementById('print-bonds');
+const printFlawsEl = document.getElementById('print-flaws');
+const printFeaturesEl = document.getElementById('print-features');
+const printLanguagesEl = document.getElementById('print-languages');
+const printHistoryEl = document.getElementById('print-history');
+const printSpellClassEl = document.getElementById('print-spell-class');
+const printSpellAbilityEl = document.getElementById('print-spell-ability');
+const printSpellDcEl = document.getElementById('print-spell-dc');
+const printSpellAttackEl = document.getElementById('print-spell-attack');
+const printCantripsEl = document.getElementById('print-cantrips');
+const printSpell1El = document.getElementById('print-spell-1');
+const printSpell2El = document.getElementById('print-spell-2');
+const printSpell3El = document.getElementById('print-spell-3');
+const printSpell4El = document.getElementById('print-spell-4');
+const printSpell5El = document.getElementById('print-spell-5');
+
 // ------------------------------------------------------------
 // Estado simples da aplicação
 // ------------------------------------------------------------
@@ -927,6 +970,71 @@ ${safeValue(fields.historia.value, 'Nenhuma história adicionada ainda.')}`;
   previewCaEl.textContent = fields.ca.value || '10';
   previewProfEl.textContent = `+${fields.proficiencia.value || '2'}`;
   previewPassivaEl.textContent = fields.sabedoria_passiva.value || '10';
+  updatePrintSheet();
+}
+
+function updatePrintSheet() {
+  if (!printNomeEl) return;
+
+  const finalAttrs = getFinalAttributes();
+  const level = Number(fields.nivel.value || 1);
+  const armorLabel = fields.armor_select?.value ? `${fields.armor_select.value}${fields.shield_equipped.value === 'Sim' ? ' + Escudo' : ''}` : '—';
+
+  printNomeEl.textContent = safeValue(fields.nome.value);
+  printClasseNivelEl.textContent = `${safeValue(fields.classe.value)} ${level}`;
+  printAntecedenteEl.textContent = safeValue(fields.antecedente.value);
+  printJogadorEl.textContent = safeValue(fields.nome_jogador.value);
+  printRacaEl.textContent = fields.subraca.value ? `${safeValue(fields.raca.value)} / ${fields.subraca.value}` : safeValue(fields.raca.value);
+  printTendenciaEl.textContent = safeValue(fields.alinhamento.value);
+  printXpEl.textContent = safeValue(fields.xp.value || '0');
+
+  printAttrGridEl.innerHTML = '';
+  Object.entries(ATTR_LABELS).forEach(([key, label]) => {
+    const box = document.createElement('div');
+    box.className = 'print-box';
+    box.innerHTML = `<small>${label}</small><strong>${finalAttrs[key]} (${formatModifier(calculateModifier(finalAttrs[key]))})</strong>`;
+    printAttrGridEl.appendChild(box);
+  });
+
+  printInspiracaoEl.textContent = '—';
+  printProficienciaEl.textContent = `+${fields.proficiencia.value || 2}`;
+  printSavesEl.textContent = safeValue(fields.testes_resistencia.value);
+  printSkillsEl.textContent = safeValue(fields.pericias.value);
+  printPassivaEl.textContent = fields.sabedoria_passiva.value || '10';
+  printCaEl.textContent = fields.ca.value || '10';
+  printIniciativaEl.textContent = formatModifier(Number(fields.iniciativa.value || 0));
+  printDeslocamentoEl.textContent = safeValue(fields.deslocamento.value, '9 m');
+  printPvTotalEl.textContent = fields.vida_max.value || '10';
+  printPvAtualEl.textContent = fields.vida_atual.value || '10';
+  printPvTempEl.textContent = fields.vida_temp.value || '0';
+  printHitDiceEl.textContent = safeValue(fields.dados_vida.value);
+  printDeathSuccessEl.textContent = '0';
+  printDeathFailEl.textContent = '0';
+  printAttacksEl.textContent = safeValue(fields.ataques.value);
+  printEquipmentEl.textContent = `${armorLabel}
+${safeValue(fields.equipamentos.value)}`;
+  printTraitsEl.textContent = safeValue(fields.tracos_personalidade.value);
+  printIdealsEl.textContent = safeValue(fields.ideais.value);
+  printBondsEl.textContent = safeValue(fields.ligacoes.value);
+  printFlawsEl.textContent = safeValue(fields.defeitos.value);
+  printFeaturesEl.textContent = safeValue(fields.caracteristicas_habilidades.value);
+  printLanguagesEl.textContent = safeValue(fields.idiomas_proficiencias.value);
+  printHistoryEl.textContent = safeValue(fields.historia.value, 'Nenhuma história registrada.');
+  printSpellClassEl.textContent = getSpellConfig(fields.classe.value) ? safeValue(fields.classe.value) : '—';
+  printSpellAbilityEl.textContent = getSpellConfig(fields.classe.value)?.ability ? ATTR_LABELS[getSpellConfig(fields.classe.value).ability] : '—';
+  printSpellDcEl.textContent = getSpellcastingStats() ? String(getSpellcastingStats().saveDC) : '—';
+  printSpellAttackEl.textContent = getSpellcastingStats() ? formatModifier(getSpellcastingStats().attackBonus) : '—';
+
+  const byLevel = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []};
+  currentSpellSelection.forEach((item) => {
+    if (byLevel[item.level]) byLevel[item.level].push(item.name);
+  });
+  printCantripsEl.textContent = byLevel[0].length ? byLevel[0].JOINTEMP : '—';
+  printSpell1El.textContent = byLevel[1].length ? byLevel[1].JOINTEMP : '—';
+  printSpell2El.textContent = byLevel[2].length ? byLevel[2].JOINTEMP : '—';
+  printSpell3El.textContent = byLevel[3].length ? byLevel[3].JOINTEMP : '—';
+  printSpell4El.textContent = byLevel[4].length ? byLevel[4].JOINTEMP : '—';
+  printSpell5El.textContent = byLevel[5].length ? byLevel[5].JOINTEMP : '—';
 }
 
 // ------------------------------------------------------------
@@ -1310,7 +1418,9 @@ document.querySelectorAll('[data-go-page]').forEach((btn) => {
 document.getElementById('dashboard-refresh').addEventListener('click', loadCharacters);
 document.getElementById('btn-reset').addEventListener('click', () => { clearForm(); setFeedback('Nova ficha pronta.'); });
 document.getElementById('btn-load-dashboard').addEventListener('click', () => goToPage('dashboard'));
-document.getElementById('btn-print').addEventListener('click', () => window.print());
+document.getElementById('btn-print').addEventListener('click', () => { updatePrintSheet(); goToPage('print'); });
+document.getElementById('btn-print-now')?.addEventListener('click', () => { updatePrintSheet(); window.print(); });
+document.getElementById('btn-back-editor')?.addEventListener('click', () => goToPage('editor'));
 document.getElementById('btn-roll-all').addEventListener('click', () => { rollAllAttributes(); setFeedback('Todos os atributos foram rolados.'); });
 
 document.querySelectorAll('.roll-attr').forEach((button) => {
