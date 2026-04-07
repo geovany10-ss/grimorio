@@ -4,610 +4,391 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Grimório do Jogador</title>
-
   <style>
-    :root{
-      --bg:#0f0b0a;
-      --panel:#1a1412;
-      --panel-2:#241c19;
-      --accent:#c89b3c;
-      --accent-2:#f0d28b;
-      --text:#f7f1e8;
-      --muted:#cbbca8;
-      --danger:#b94a48;
-      --border:rgba(255,255,255,.08);
-      --radius:18px;
+    :root {
+      --bg: #0f0b0a;
+      --panel: #1a1412;
+      --panel-2: #241c19;
+      --accent: #c89b3c;
+      --accent-2: #f0d28b;
+      --text: #f7f1e8;
+      --muted: #cbbca8;
+      --danger: #d05a57;
+      --border: rgba(255,255,255,.08);
+      --radius: 20px;
+      --shadow: 0 20px 50px rgba(0,0,0,.35);
     }
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:Inter,Arial,sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, system-ui, Arial, sans-serif; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(200,155,60,.12), transparent 30%), linear-gradient(180deg, #120d0b 0%, #0f0b0a 100%);
+      color: var(--text);
+      padding: 24px;
     }
 
-    body{
-      background:linear-gradient(180deg,#120d0b 0%,#0f0b0a 100%);
-      color:var(--text);
-      min-height:100vh;
-      padding:24px;
+    .container { width: min(1480px, 100%); margin: 0 auto; }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 16px 18px; border: 1px solid rgba(255,255,255,.06);
+      background: rgba(18,13,11,.92); backdrop-filter: blur(12px);
+      border-radius: 22px; box-shadow: var(--shadow); position: sticky; top: 14px; z-index: 50; margin-bottom: 22px;
     }
 
-    .container{
-      max-width:1500px;
-      margin:0 auto;
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, rgba(200,155,60,.18), rgba(200,155,60,.08));
+      border: 1px solid rgba(200,155,60,.25); font-size: 1.2rem;
+    }
+    .brand h1 { font-size: 1.2rem; }
+    .brand p { color: var(--muted); font-size: .92rem; }
+
+    .nav-links, .actions, .hero-actions, .card-actions, .toolbar { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    button, .btn {
+      border: none; border-radius: 14px; padding: 11px 14px; font-size: .92rem; cursor: pointer;
+      transition: .15s ease; font-weight: 700;
+    }
+    button:hover, .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #a76f1f); color: #1d1307; }
+    .btn-secondary, .nav-btn { background: #2a211d; color: var(--text); border: 1px solid rgba(255,255,255,.08); }
+    .btn-danger { background: rgba(208,90,87,.15); color: #ffd7d7; border: 1px solid rgba(208,90,87,.35); }
+    .nav-btn.active { border-color: var(--accent); color: var(--accent-2); }
+
+    .page { display: none; animation: fadeIn .2s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hero, .dashboard-grid, .editor-layout, .grid-2, .grid-3, .stats-grid, .sheet-grid, .attributes-grid { display: grid; gap: 16px; }
+    .hero { grid-template-columns: 1.15fr .85fr; margin-bottom: 24px; }
+    .dashboard-grid { grid-template-columns: 1fr 1fr; }
+    .editor-layout { grid-template-columns: 1.4fr .6fr; align-items: start; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .sheet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .attributes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .panel, .hero-panel, .sheet-panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
     }
 
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:18px 20px;
-      border:1px solid rgba(255,255,255,.06);
-      background:rgba(18,13,11,.92);
-      border-radius:20px;
-      margin-bottom:24px;
+    .panel-header { padding: 22px 24px 14px; border-bottom: 1px solid rgba(255,255,255,.05); background: linear-gradient(180deg, rgba(200,155,60,.08), transparent); }
+    .panel-header h2 { font-size: 1.15rem; margin-bottom: 6px; }
+    .panel-header p, .muted { color: var(--muted); line-height: 1.6; }
+    .panel-body { padding: 24px; }
+
+    .hero-panel { padding: 30px; border-radius: 28px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px;
+      border: 1px solid rgba(200,155,60,.24); background: rgba(200,155,60,.08); color: var(--accent-2); font-size: .88rem; margin-bottom: 16px;
+    }
+    .hero h2 { font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.05; margin-bottom: 14px; letter-spacing: -.03em; }
+    .hero p { color: var(--muted); line-height: 1.7; }
+
+    .stat-card, .character-card, .list-row, .sheet-box, .attr-card, .helper-box {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 18px; padding: 16px;
+    }
+    .stat-card small { display: block; color: var(--muted); margin-bottom: 6px; }
+    .stat-card strong { color: var(--accent-2); font-size: 1.7rem; }
+
+    .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: .92rem; color: var(--accent-2); font-weight: 600; }
+
+    input, select, textarea {
+      width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--text);
+      border-radius: 14px; padding: 14px; outline: none; transition: .2s ease; font-size: .98rem;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(200,155,60,.12); }
+    textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
+
+    .section-title { margin: 28px 0 14px; font-size: 1rem; color: var(--accent-2); letter-spacing: .03em; text-transform: uppercase; }
+
+    .attr-top { display: flex; justify-content: space-between; align-items: center; }
+    .modifier {
+      background: rgba(200,155,60,.1); border: 1px solid rgba(200,155,60,.28); color: var(--accent-2);
+      width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-weight: 700; font-size: 1.05rem;
     }
 
-    .brand h1{
-      font-size:1.4rem;
-      color:var(--accent-2);
-      margin-bottom:4px;
-    }
+    .helper-box { color: var(--muted); white-space: pre-wrap; line-height: 1.6; }
+    .feedback { min-height: 24px; margin-bottom: 14px; color: var(--muted); }
 
-    .brand p{
-      color:var(--muted);
-      font-size:.95rem;
-    }
+    .character-list { display: grid; gap: 12px; }
+    .character-card h3 { font-size: 1.08rem; margin-bottom: 6px; }
+    .character-card p { color: var(--muted); margin-bottom: 6px; }
 
-    .layout{
-      display:grid;
-      grid-template-columns:1.25fr .75fr;
-      gap:24px;
-    }
+    .sheet-preview { position: sticky; top: 100px; }
+    .sheet-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .sheet-header h3 { font-size: 1.7rem; margin-bottom: 8px; }
+    .sheet-section { padding: 0 24px 22px; }
+    .sheet-section h4 { color: var(--accent-2); margin-bottom: 12px; font-size: .98rem; text-transform: uppercase; letter-spacing: .06em; }
+    .sheet-box div, .sheet-box p { white-space: pre-wrap; line-height: 1.5; }
 
-    .panel{
-      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:20px;
-      overflow:hidden;
+    .spell-selector-section { max-height: 460px; overflow: auto; border-radius: 18px; }
+    .spell-group { margin-bottom: 14px; }
+    .spell-group h5 { color: var(--accent-2); margin-bottom: 10px; font-size: .95rem; }
+    .spell-list { display: grid; gap: 8px; }
+    .spell-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
     }
+    .spell-item small { display: block; color: var(--muted); margin-top: 4px; }
 
-    .panel-header{
-      padding:20px 22px 14px;
-      border-bottom:1px solid rgba(255,255,255,.05);
-      background:linear-gradient(180deg,rgba(200,155,60,.08),transparent);
-    }
-
-    .panel-header h2{
-      font-size:1.15rem;
-      margin-bottom:6px;
-    }
-
-    .panel-header p{
-      color:var(--muted);
-      line-height:1.5;
-      font-size:.95rem;
-    }
-
-    .panel-body{
-      padding:22px;
-    }
-
-    .grid-2{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-    }
-
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-bottom:14px;
-    }
-
-    .field.full{
-      grid-column:1/-1;
-    }
-
-    label{
-      color:var(--accent-2);
-      font-size:.92rem;
-      font-weight:600;
-    }
-
-    input, select, textarea{
-      width:100%;
-      background:var(--panel);
-      color:var(--text);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:13px 14px;
-      font-size:.95rem;
-      outline:none;
-    }
-
-    textarea{
-      min-height:100px;
-      resize:vertical;
-      line-height:1.5;
-    }
-
-    .section-title{
-      margin:22px 0 14px;
-      font-size:.95rem;
-      color:var(--accent-2);
-      text-transform:uppercase;
-      letter-spacing:.05em;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:12px;
-      margin-bottom:18px;
-    }
-
-    .stat-box, .attr-card, .helper-box, .sheet-box, .list-card{
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .stat-box small{
-      display:block;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    .stat-box strong{
-      font-size:1.25rem;
-      color:var(--accent-2);
-    }
-
-    .attr-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:10px;
-    }
-
-    .attr-top span{
-      color:var(--accent-2);
-      font-weight:700;
-      font-size:.9rem;
-    }
-
-    .mod-badge{
-      background:rgba(200,155,60,.12);
-      border:1px solid rgba(200,155,60,.28);
-      color:var(--accent-2);
-      border-radius:12px;
-      padding:8px 10px;
-      min-width:52px;
-      text-align:center;
-      font-weight:700;
-    }
-
-    .attr-actions,
-    .actions,
-    .card-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    button{
-      border:none;
-      border-radius:14px;
-      padding:11px 14px;
-      font-size:.92rem;
-      cursor:pointer;
-      transition:.15s ease;
-      font-weight:700;
-    }
-
-    button:hover{
-      transform:translateY(-1px);
-    }
-
-    .btn-primary{
-      background:linear-gradient(135deg,var(--accent),#a76f1f);
-      color:#1d1307;
-    }
-
-    .btn-secondary{
-      background:#2a211d;
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .btn-danger{
-      background:rgba(185,74,72,.15);
-      color:#ffd8d8;
-      border:1px solid rgba(185,74,72,.35);
-    }
-
-    .feedback{
-      min-height:24px;
-      margin-bottom:14px;
-      color:var(--muted);
-    }
-
-    .helper-box{
-      color:var(--muted);
-      line-height:1.5;
-      white-space:pre-wrap;
-      margin-bottom:12px;
-    }
-
-    .character-list{
-      display:grid;
-      gap:12px;
-      margin-top:18px;
-    }
-
-    .character-card{
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      padding:16px;
-    }
-
-    .character-card h3{
-      font-size:1.05rem;
-      margin-bottom:6px;
-    }
-
-    .character-card p{
-      color:var(--muted);
-      margin-bottom:6px;
-      line-height:1.4;
-    }
-
-    .sheet-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .sheet-box h4{
-      color:var(--accent-2);
-      margin-bottom:8px;
-      font-size:.95rem;
-    }
-
-    .sheet-box div, .sheet-box p{
-      white-space:pre-wrap;
-      line-height:1.5;
-    }
-
-    .empty{
-      padding:16px;
-      border-radius:14px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.06);
-      color:var(--muted);
-    }
+    .empty { padding: 16px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); color: var(--muted); }
 
     @media print {
-      body{
-        background:white;
-        color:black;
-        padding:0;
-      }
-
-      .topbar,
-      .panel:first-child{
-        display:none !important;
-      }
-
-      .layout{
-        display:block;
-      }
-
-      .panel{
-        border:none;
-        background:white;
-        box-shadow:none;
-      }
-
-      .sheet-box{
-        border:1px solid #999;
-        background:white;
-        color:black;
-      }
-
-      .sheet-box h4{
-        color:black;
-      }
+      body { background: white; color: black; padding: 0; }
+      .topbar, .page:not(#page-editor) .panel, .editor-main { display: none !important; }
+      .page { display: none !important; }
+      #page-editor { display: block !important; }
+      .editor-layout { display: block; }
+      .sheet-preview { position: static; }
+      .sheet-panel, .sheet-box { box-shadow: none; background: white; color: black; border-color: #999; }
+      .sheet-section h4, .sheet-header h3 { color: black; }
     }
 
-    @media (max-width: 950px){
-      .layout, .grid-2, .grid-3, .stats, .sheet-grid{
-        grid-template-columns:1fr;
-      }
+    @media (max-width: 1100px) {
+      .hero, .dashboard-grid, .editor-layout { grid-template-columns: 1fr; }
+      .sheet-preview { position: static; }
+    }
+    @media (max-width: 720px) {
+      body { padding: 16px; }
+      .topbar { position: static; flex-direction: column; align-items: flex-start; }
+      .grid-2, .grid-3, .stats-grid, .sheet-grid, .attributes-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-
-    <!-- ======================================================
-         TOPO DO SITE
-    ======================================================= -->
     <header class="topbar">
       <div class="brand">
-        <h1>📖 Grimório do Jogador</h1>
-        <p>Criador de ficha inspirado no padrão D&D 5e</p>
+        <div class="brand-mark">📖</div>
+        <div>
+          <h1>Grimório do Jogador</h1>
+          <p>Crie, organize e preserve os heróis da sua campanha.</p>
+        </div>
       </div>
 
-      <div class="actions" style="margin-top:0;">
-        <button type="button" class="btn-secondary" id="btn-refresh">Atualizar lista</button>
-        <button type="button" class="btn-primary" id="btn-reset-top">Nova ficha</button>
-      </div>
+      <nav class="nav-links">
+        <button class="nav-btn active" data-page="home">Início</button>
+        <button class="nav-btn" data-page="dashboard">Dashboard</button>
+        <button class="nav-btn" data-page="editor">Criar Ficha</button>
+      </nav>
     </header>
 
-    <main class="layout">
-
-      <!-- ====================================================
-           LADO ESQUERDO: FORMULÁRIO
-      ===================================================== -->
-      <section class="panel">
-        <div class="panel-header">
-          <h2>Criar / Editar Personagem</h2>
-          <p>Preencha a ficha do personagem e salve no grimório.</p>
-        </div>
-
-        <div class="panel-body">
-          <div id="feedback" class="feedback">Pronto para criar seu personagem.</div>
-
-          <!-- Resumo automático -->
-          <div class="stats">
-            <div class="stat-box"><small>PV Máx.</small><strong id="preview-vida">10</strong></div>
-            <div class="stat-box"><small>CA</small><strong id="preview-ca">10</strong></div>
-            <div class="stat-box"><small>Proficiência</small><strong id="preview-proficiencia">+2</strong></div>
-            <div class="stat-box"><small>Iniciativa</small><strong id="preview-iniciativa">+0</strong></div>
-            <div class="stat-box"><small>Passiva</small><strong id="preview-passiva">10</strong></div>
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-panel">
+          <div class="eyebrow">✨ Bem-vindo ao Grimório do Jogador</div>
+          <h2>Antes de enfrentar dragões, todo herói precisa de um nome.</h2>
+          <p>
+            Nas bibliotecas antigas do mundo, dizem que cada aventureiro deixa um eco nas páginas do destino.
+            O Grimório do Jogador nasceu para guardar esses ecos: guerreiros juramentados, magos imprudentes,
+            druidas silenciosos, bardos insolentes e todos os heróis que ainda não existem — mas já esperam por você.
+            Aqui você cria sua ficha, acompanha suas magias, salva seus personagens e retorna sempre que a campanha chamar.
+          </p>
+          <div class="hero-actions" style="margin-top:16px;">
+            <button class="btn-primary" data-go-page="editor">Criar novo personagem</button>
+            <button class="btn-secondary" data-go-page="dashboard">Abrir dashboard</button>
           </div>
-
-          <form id="character-form">
-            <input type="hidden" id="character-id" />
-
-            <!-- Identificação -->
-            <div class="section-title">Identificação</div>
-            <div class="grid-2">
-              <div class="field"><label for="nome">Nome do personagem</label><input id="nome" type="text" /></div>
-              <div class="field"><label for="nome_jogador">Nome do jogador</label><input id="nome_jogador" type="text" /></div>
-              <div class="field"><label for="classe">Classe</label><select id="classe"></select></div>
-              <div class="field"><label for="nivel">Nível</label><input id="nivel" type="number" min="1" max="20" value="1" /></div>
-              <div class="field"><label for="raca">Raça</label><select id="raca"></select></div>
-              <div class="field"><label for="subraca">Sub-raça</label><select id="subraca"></select></div>
-              <div class="field"><label for="antecedente">Antecedente</label><input id="antecedente" type="text" /></div>
-              <div class="field"><label for="tendencia">Tendência</label><input id="tendencia" type="text" /></div>
-              <div class="field"><label for="xp">XP</label><input id="xp" type="number" min="0" value="0" /></div>
-              <div class="field"><label for="inspiracao">Inspiração</label>
-                <select id="inspiracao">
-                  <option value="Não">Não</option>
-                  <option value="Sim">Sim</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Aparência -->
-            <div class="section-title">Aparência</div>
-            <div class="grid-3">
-              <div class="field"><label for="idade">Idade</label><input id="idade" type="text" /></div>
-              <div class="field"><label for="altura">Altura</label><input id="altura" type="text" /></div>
-              <div class="field"><label for="peso">Peso</label><input id="peso" type="text" /></div>
-              <div class="field"><label for="olhos">Olhos</label><input id="olhos" type="text" /></div>
-              <div class="field"><label for="pele">Pele</label><input id="pele" type="text" /></div>
-              <div class="field"><label for="cabelos">Cabelos</label><input id="cabelos" type="text" /></div>
-            </div>
-
-            <!-- Atributos -->
-            <div class="section-title">Atributos</div>
-
-            <div class="actions" style="margin-bottom:10px;">
-              <button type="button" class="btn-secondary" id="btn-roll-all">🎲 Rolar todos (4d6)</button>
-            </div>
-
-            <div class="helper-box" id="dice-log">As rolagens dos atributos aparecerão aqui.</div>
-            <div class="helper-box" id="race-bonus-log">Bônus raciais aplicados: nenhum.</div>
-
-            <div class="grid-3">
-              <div class="attr-card">
-                <div class="attr-top"><span>Força</span><div class="mod-badge" id="mod-forca">+0</div></div>
-                <input id="forca" type="number" value="10" />
-                <div class="attr-actions"><button type="button" class="btn-secondary roll-attr" data-attr="forca">🎲 Rolar</button></div>
-              </div>
-
-              <div class="attr-card">
-                <div class="attr-top"><span>Destreza</span><div class="mod-badge" id="mod-destreza">+0</div></div>
-                <input id="destreza" type="number" value="10" />
-                <div class="attr-actions"><button type="button" class="btn-secondary roll-attr" data-attr="destreza">🎲 Rolar</button></div>
-              </div>
-
-              <div class="attr-card">
-                <div class="attr-top"><span>Constituição</span><div class="mod-badge" id="mod-constituicao">+0</div></div>
-                <input id="constituicao" type="number" value="10" />
-                <div class="attr-actions"><button type="button" class="btn-secondary roll-attr" data-attr="constituicao">🎲 Rolar</button></div>
-              </div>
-
-              <div class="attr-card">
-                <div class="attr-top"><span>Inteligência</span><div class="mod-badge" id="mod-inteligencia">+0</div></div>
-                <input id="inteligencia" type="number" value="10" />
-                <div class="attr-actions"><button type="button" class="btn-secondary roll-attr" data-attr="inteligencia">🎲 Rolar</button></div>
-              </div>
-
-              <div class="attr-card">
-                <div class="attr-top"><span>Sabedoria</span><div class="mod-badge" id="mod_sabedoria">+0</div></div>
-                <input id="sabedoria" type="number" value="10" />
-                <div class="attr-actions"><button type="button" class="btn-secondary roll-attr" data-attr="sabedoria">🎲 Rolar</button></div>
-              </div>
-
-              <div class="attr-card">
-                <div class="attr-top"><span>Carisma</span><div class="mod-badge" id="mod-carisma">+0</div></div>
-                <input id="carisma" type="number" value="10" />
-                <div class="attr-actions"><button type="button" class="btn-secondary roll-attr" data-attr="carisma">🎲 Rolar</button></div>
-              </div>
-            </div>
-
-            <!-- Combate -->
-            <div class="section-title">Combate</div>
-            <div class="grid-3">
-              <div class="field"><label for="vida_max">PV Máximos</label><input id="vida_max" type="number" value="10" /></div>
-              <div class="field"><label for="vida_atual">PV Atuais</label><input id="vida_atual" type="number" value="10" /></div>
-              <div class="field"><label for="vida_temp">PV Temporários</label><input id="vida_temp" type="number" value="0" /></div>
-              <div class="field"><label for="ca">Classe de Armadura</label><input id="ca" type="number" value="10" /></div>
-              <div class="field"><label for="iniciativa">Iniciativa</label><input id="iniciativa" type="number" value="0" /></div>
-              <div class="field"><label for="deslocamento">Deslocamento</label><input id="deslocamento" type="text" value="9 m" /></div>
-              <div class="field"><label for="proficiencia">Bônus de Proficiência</label><input id="proficiencia" type="number" value="2" /></div>
-              <div class="field"><label for="dados_vida">Dados de Vida</label><input id="dados_vida" type="text" /></div>
-              <div class="field"><label for="sabedoria_passiva">Sabedoria Passiva</label><input id="sabedoria_passiva" type="number" value="10" /></div>
-            </div>
-
-            <!-- Perícias e resistências -->
-            <div class="section-title">Perícias e Resistências</div>
-            <div class="field full"><label for="testes_resistencia">Testes de Resistência</label><textarea id="testes_resistencia"></textarea></div>
-            <div class="field full"><label for="pericias">Perícias</label><textarea id="pericias"></textarea></div>
-
-            <!-- Combate e equipamentos -->
-            <div class="section-title">Ataques e Equipamentos</div>
-            <div class="field full"><label for="ataques">Ataques e Magias</label><textarea id="ataques"></textarea></div>
-            <div class="field full"><label for="equipamentos">Equipamentos</label><textarea id="equipamentos"></textarea></div>
-            <div class="field full"><label for="caracteristicas_habilidades">Características e Habilidades</label><textarea id="caracteristicas_habilidades"></textarea></div>
-            <div class="field full"><label for="idiomas_proficiencias">Idiomas e Outras Proficiências</label><textarea id="idiomas_proficiencias"></textarea></div>
-
-            <!-- Personalidade -->
-            <div class="section-title">Personalidade</div>
-            <div class="field full"><label for="tracos_personalidade">Traços de Personalidade</label><textarea id="tracos_personalidade"></textarea></div>
-            <div class="field full"><label for="ideais">Ideais</label><textarea id="ideais"></textarea></div>
-            <div class="field full"><label for="ligacoes">Ligações</label><textarea id="ligacoes"></textarea></div>
-            <div class="field full"><label for="defeitos">Defeitos</label><textarea id="defeitos"></textarea></div>
-
-            <!-- História -->
-            <div class="section-title">História</div>
-            <div class="field full"><label for="historia">História do Personagem</label><textarea id="historia"></textarea></div>
-            <div class="field full"><label for="aparencia">Aparência</label><textarea id="aparencia"></textarea></div>
-            <div class="field full"><label for="aliados_organizacoes">Aliados e Organizações</label><textarea id="aliados_organizacoes"></textarea></div>
-            <div class="field full"><label for="tesouro">Tesouro</label><textarea id="tesouro"></textarea></div>
-
-            <!-- Magias -->
-            <div class="section-title">Magias</div>
-            <div class="grid-2">
-              <div class="field"><label for="classe_conjuradora">Classe de Conjurador</label><input id="classe_conjuradora" type="text" /></div>
-              <div class="field"><label for="habilidade_chave_magia">Habilidade-chave</label><input id="habilidade_chave_magia" type="text" /></div>
-              <div class="field"><label for="cd_magia">CD da Magia</label><input id="cd_magia" type="number" /></div>
-              <div class="field"><label for="bonus_ataque_magia">Bônus de Ataque Mágico</label><input id="bonus_ataque_magia" type="number" /></div>
-            </div>
-
-            <div class="field full"><label for="truques">Truques</label><textarea id="truques"></textarea></div>
-            <div class="field full"><label for="magias_nivel_1">Magias de 1º nível</label><textarea id="magias_nivel_1"></textarea></div>
-            <div class="field full"><label for="magias_nivel_2">Magias de 2º nível</label><textarea id="magias_nivel_2"></textarea></div>
-            <div class="field full"><label for="magias_nivel_3">Magias de 3º nível</label><textarea id="magias_nivel_3"></textarea></div>
-            <div class="field full"><label for="magias_nivel_4">Magias de 4º nível</label><textarea id="magias_nivel_4"></textarea></div>
-            <div class="field full"><label for="magias_nivel_5">Magias de 5º nível</label><textarea id="magias_nivel_5"></textarea></div>
-
-            <div class="section-title">Espaços de Magia</div>
-            <div class="grid-3">
-              <div class="field"><label for="espacos_nivel_1_total">1º total</label><input id="espacos_nivel_1_total" type="number" value="0" /></div>
-              <div class="field"><label for="espacos_nivel_1_usados">1º usados</label><input id="espacos_nivel_1_usados" type="number" value="0" /></div>
-              <div class="field"><label for="espacos_nivel_2_total">2º total</label><input id="espacos_nivel_2_total" type="number" value="0" /></div>
-              <div class="field"><label for="espacos_nivel_2_usados">2º usados</label><input id="espacos_nivel_2_usados" type="number" value="0" /></div>
-              <div class="field"><label for="espacos_nivel_3_total">3º total</label><input id="espacos_nivel_3_total" type="number" value="0" /></div>
-              <div class="field"><label for="espacos_nivel_3_usados">3º usados</label><input id="espacos_nivel_3_usados" type="number" value="0" /></div>
-            </div>
-
-            <div class="actions">
-              <button type="submit" class="btn-primary">Salvar personagem</button>
-              <button type="button" class="btn-secondary" id="btn-reset">Limpar formulário</button>
-              <button type="button" class="btn-secondary" id="btn-load-sheet">Atualizar ficha final</button>
-              <button type="button" class="btn-primary" id="btn-print">Imprimir / Salvar PDF</button>
-            </div>
-          </form>
-
-          <!-- Lista de personagens -->
-          <div class="section-title">Personagens Salvos</div>
-          <div id="character-list" class="character-list"></div>
-        </div>
-      </section>
-
-      <!-- ====================================================
-           LADO DIREITO: FICHA FINAL
-      ===================================================== -->
-      <section class="panel" id="sheet-panel">
-        <div class="panel-header">
-          <h2>Ficha Final</h2>
-          <p>Visual resumido do personagem para conferência e impressão.</p>
         </div>
 
-        <div class="panel-body">
-          <div class="sheet-grid">
-            <div class="sheet-box">
-              <h4>Identificação</h4>
-              <div id="sheet-identificacao">Nome: —</div>
+        <div class="hero-panel">
+          <div class="stats-grid">
+            <div class="stat-card"><small>Personagens salvos</small><strong id="home-total">0</strong></div>
+            <div class="stat-card"><small>Média de nível</small><strong id="home-average">0</strong></div>
+            <div class="stat-card"><small>Classe mais usada</small><strong id="home-top-class">—</strong></div>
+            <div class="stat-card"><small>Raça mais usada</small><strong id="home-top-race">—</strong></div>
+          </div>
+          <div class="panel" style="margin-top:16px;">
+            <div class="panel-header"><h2>O que o site já faz</h2></div>
+            <div class="panel-body">
+              <p class="muted">• Página inicial com introdução do projeto.</p>
+              <p class="muted">• Dashboard com personagens salvos.</p>
+              <p class="muted">• Editor completo com rolagem 4d6, raças, sub-raças, tendência e cálculo automático.</p>
+              <p class="muted">• Seleção de magias diretamente no editor para classes conjuradoras.</p>
+              <p class="muted">• Controle de limites por classe e nível para truques, magias conhecidas ou preparadas e espaços de magia.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-dashboard">
+      <div class="stats-grid" style="margin-bottom:24px;">
+        <div class="stat-card"><small>Total de personagens</small><strong id="dash-total">0</strong></div>
+        <div class="stat-card"><small>Média de nível</small><strong id="dash-average">0</strong></div>
+        <div class="stat-card"><small>Classe mais usada</small><strong id="dash-top-class">—</strong></div>
+        <div class="stat-card"><small>Raça mais usada</small><strong id="dash-top-race">—</strong></div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Personagens salvos</h2>
+            <p>Entre em qualquer ficha que já tenha sido salva no grimório.</p>
+          </div>
+          <div class="panel-body">
+            <div class="toolbar">
+              <input id="dashboard-search" type="text" placeholder="Buscar por nome..." />
+              <select id="dashboard-class-filter"></select>
+              <select id="dashboard-race-filter"></select>
+              <button id="dashboard-refresh" class="btn-secondary" type="button">Atualizar</button>
+            </div>
+            <div id="dashboard-feedback" class="feedback" style="margin-top:14px;">Pronto.</div>
+            <div id="dashboard-list" class="character-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Resumo do acervo</h2>
+            <p>Visão rápida das tendências do seu grupo de personagens.</p>
+          </div>
+          <div class="panel-body">
+            <div id="dashboard-summary" class="character-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-editor">
+      <div class="editor-layout">
+        <div class="editor-main panel">
+          <div class="panel-header">
+            <h2>Criar / Editar Personagem</h2>
+            <p>Monte a ficha do herói e salve tudo no grimório.</p>
+          </div>
+          <div class="panel-body">
+            <div id="feedback" class="feedback">Pronto para criar um personagem.</div>
+
+            <div class="stats-grid" style="margin-bottom:18px;">
+              <div class="stat-card"><small>PV Máx.</small><strong id="preview-vida">10</strong></div>
+              <div class="stat-card"><small>CA</small><strong id="preview-ca">10</strong></div>
+              <div class="stat-card"><small>Proficiência</small><strong id="preview-proficiencia">+2</strong></div>
+              <div class="stat-card"><small>Passiva</small><strong id="preview-passiva">10</strong></div>
             </div>
 
-            <div class="sheet-box">
-              <h4>Combate</h4>
-              <div id="sheet-combate">PV: —</div>
-            </div>
+            <form id="character-form">
+              <input type="hidden" id="character-id" />
 
-            <div class="sheet-box">
-              <h4>Atributos</h4>
-              <div id="sheet-atributos">—</div>
-            </div>
+              <div class="section-title">Identificação</div>
+              <div class="grid-3">
+                <div class="field"><label for="nome">Nome do personagem</label><input id="nome" type="text" /></div>
+                <div class="field"><label for="nome_jogador">Nome do jogador</label><input id="nome_jogador" type="text" /></div>
+                <div class="field"><label for="nivel">Nível</label><input id="nivel" type="number" min="1" max="20" value="1" /></div>
+                <div class="field"><label for="classe">Classe</label><select id="classe"></select></div>
+                <div class="field"><label for="raca">Raça</label><select id="raca"></select></div>
+                <div class="field"><label for="subraca">Sub-raça / Linhagem</label><select id="subraca"></select></div>
+                <div class="field"><label for="alinhamento">Tendência</label><select id="alinhamento"></select></div>
+                <div class="field"><label for="antecedente">Antecedente</label><input id="antecedente" type="text" placeholder="Ex.: Herói do Povo" /></div>
+                <div class="field"><label for="xp">XP</label><input id="xp" type="number" min="0" value="0" /></div>
+              </div>
 
-            <div class="sheet-box">
-              <h4>Perícias e Resistências</h4>
-              <div id="sheet-pericias">—</div>
-            </div>
+              <div class="section-title">Atributos</div>
+              <div class="actions" style="margin-bottom:10px;">
+                <button type="button" class="btn-secondary" id="btn-roll-all">🎲 Rolar todos (4d6)</button>
+              </div>
+              <div class="helper-box" id="dice-log">As rolagens dos atributos aparecerão aqui.</div>
+              <div class="helper-box" id="race-bonus-log">Bônus raciais aplicados: nenhum.</div>
 
-            <div class="sheet-box">
-              <h4>Ataques e Magias</h4>
-              <div id="sheet-ataques">—</div>
-            </div>
+              <div class="attributes-grid" style="margin-top:12px;">
+                <div class="attr-card"><div class="attr-top"><span>Força</span><div class="modifier" id="mod-forca">+0</div></div><input id="forca" type="number" value="10" /><div class="actions"><button type="button" class="btn-secondary roll-attr" data-attr="forca">🎲 Rolar</button></div></div>
+                <div class="attr-card"><div class="attr-top"><span>Destreza</span><div class="modifier" id="mod-destreza">+0</div></div><input id="destreza" type="number" value="10" /><div class="actions"><button type="button" class="btn-secondary roll-attr" data-attr="destreza">🎲 Rolar</button></div></div>
+                <div class="attr-card"><div class="attr-top"><span>Constituição</span><div class="modifier" id="mod-constituicao">+0</div></div><input id="constituicao" type="number" value="10" /><div class="actions"><button type="button" class="btn-secondary roll-attr" data-attr="constituicao">🎲 Rolar</button></div></div>
+                <div class="attr-card"><div class="attr-top"><span>Inteligência</span><div class="modifier" id="mod-inteligencia">+0</div></div><input id="inteligencia" type="number" value="10" /><div class="actions"><button type="button" class="btn-secondary roll-attr" data-attr="inteligencia">🎲 Rolar</button></div></div>
+                <div class="attr-card"><div class="attr-top"><span>Sabedoria</span><div class="modifier" id="mod-sabedoria">+0</div></div><input id="sabedoria" type="number" value="10" /><div class="actions"><button type="button" class="btn-secondary roll-attr" data-attr="sabedoria">🎲 Rolar</button></div></div>
+                <div class="attr-card"><div class="attr-top"><span>Carisma</span><div class="modifier" id="mod-carisma">+0</div></div><input id="carisma" type="number" value="10" /><div class="actions"><button type="button" class="btn-secondary roll-attr" data-attr="carisma">🎲 Rolar</button></div></div>
+              </div>
 
-            <div class="sheet-box">
-              <h4>Equipamentos e Proficiências</h4>
-              <div id="sheet-equipamentos">—</div>
-            </div>
+              <div class="section-title">Combate</div>
+              <div class="grid-3">
+                <div class="field"><label for="vida_max">PV Máx.</label><input id="vida_max" type="number" value="10" /></div>
+                <div class="field"><label for="vida_atual">PV Atuais</label><input id="vida_atual" type="number" value="10" /></div>
+                <div class="field"><label for="vida_temp">PV Temporários</label><input id="vida_temp" type="number" value="0" /></div>
+                <div class="field"><label for="ca">Classe de Armadura</label><input id="ca" type="number" value="10" /></div>
+                <div class="field"><label for="iniciativa">Iniciativa</label><input id="iniciativa" type="number" value="0" /></div>
+                <div class="field"><label for="deslocamento">Deslocamento</label><input id="deslocamento" type="text" value="9 m" /></div>
+                <div class="field"><label for="proficiencia">Bônus de Proficiência</label><input id="proficiencia" type="number" value="2" /></div>
+                <div class="field"><label for="dados_vida">Dados de Vida</label><input id="dados_vida" type="text" /></div>
+                <div class="field"><label for="sabedoria_passiva">Sabedoria Passiva</label><input id="sabedoria_passiva" type="number" value="10" /></div>
+              </div>
 
-            <div class="sheet-box">
-              <h4>Características</h4>
-              <div id="sheet-caracteristicas">—</div>
-            </div>
+              <div class="section-title">Descrição e ficha</div>
+              <div class="grid-2">
+                <div class="field"><label for="tracos_personalidade">Traços de Personalidade</label><textarea id="tracos_personalidade"></textarea></div>
+                <div class="field"><label for="ideais">Ideais</label><textarea id="ideais"></textarea></div>
+                <div class="field"><label for="ligacoes">Ligações</label><textarea id="ligacoes"></textarea></div>
+                <div class="field"><label for="defeitos">Defeitos</label><textarea id="defeitos"></textarea></div>
+                <div class="field full"><label for="testes_resistencia">Testes de Resistência</label><textarea id="testes_resistencia" placeholder="Ex.: Força +5, Constituição +4"></textarea></div>
+                <div class="field full"><label for="pericias">Perícias</label><textarea id="pericias" placeholder="Ex.: Atletismo +5, Percepção +3"></textarea></div>
+                <div class="field full"><label for="ataques">Ataques e Magias</label><textarea id="ataques"></textarea></div>
+                <div class="field full"><label for="equipamentos">Equipamentos</label><textarea id="equipamentos"></textarea></div>
+                <div class="field full"><label for="caracteristicas_habilidades">Características e Habilidades</label><textarea id="caracteristicas_habilidades"></textarea></div>
+                <div class="field full"><label for="idiomas_proficiencias">Idiomas e Outras Proficiências</label><textarea id="idiomas_proficiencias"></textarea></div>
+                <div class="field full"><label for="historia">História do Personagem</label><textarea id="historia"></textarea></div>
+              </div>
 
-            <div class="sheet-box">
-              <h4>Personalidade</h4>
-              <div id="sheet-tracos">—</div>
-            </div>
+              <div class="section-title">Magias</div>
+              <div class="helper-box" id="spell-rules-info">Selecione uma classe conjuradora para ver as regras de seleção.</div>
+              <div class="helper-box" id="spell-selection-info">Nenhuma magia selecionada.</div>
+              <div class="helper-box" id="spell-slots-info">Sem espaços de magia.</div>
 
-            <div class="sheet-box">
+              <div class="panel spell-selector-section" style="margin-bottom:16px;">
+                <div class="panel-body" id="spell-selector"></div>
+              </div>
+
+              <div class="field full"><label for="selected_spells_text">Resumo das magias selecionadas</label><textarea id="selected_spells_text" readonly></textarea></div>
+
+              <div class="actions">
+                <button type="submit" class="btn-primary">Salvar personagem</button>
+                <button type="button" class="btn-secondary" id="btn-reset">Nova ficha</button>
+                <button type="button" class="btn-secondary" id="btn-load-dashboard">Ver dashboard</button>
+                <button type="button" class="btn-primary" id="btn-print">Imprimir / Salvar PDF</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <aside class="sheet-preview">
+          <div class="sheet-panel panel">
+            <div class="sheet-header">
+              <h3 id="sheet-name">Personagem sem nome</h3>
+              <p class="muted" id="sheet-subtitle">Guerreiro • Humano • Nível 1</p>
+            </div>
+            <div class="sheet-section">
+              <h4>Resumo rápido</h4>
+              <div class="sheet-grid">
+                <div class="sheet-box"><div id="sheet-meta-1">Antecedente: —</div></div>
+                <div class="sheet-box"><div id="sheet-meta-2">Tendência: —</div></div>
+                <div class="sheet-box"><div id="sheet-meta-3">PV Máx.: 10</div></div>
+                <div class="sheet-box"><div id="sheet-meta-4">CA: 10</div></div>
+                <div class="sheet-box"><div id="sheet-meta-5">Iniciativa: +0</div></div>
+                <div class="sheet-box"><div id="sheet-meta-6">Passiva: 10</div></div>
+              </div>
+            </div>
+            <div class="sheet-section">
+              <h4>Atributos finais</h4>
+              <div class="sheet-grid" id="sheet-attributes-grid"></div>
+            </div>
+            <div class="sheet-section">
               <h4>Magias</h4>
-              <div id="sheet-magias">—</div>
+              <div class="sheet-box"><div id="sheet-spells">—</div></div>
             </div>
-
-            <div class="sheet-box" style="grid-column:1/-1;">
+            <div class="sheet-section">
               <h4>História</h4>
-              <div id="sheet-historia">—</div>
+              <div class="sheet-box"><div id="sheet-history">Nenhuma história adicionada ainda.</div></div>
             </div>
           </div>
-        </div>
-      </section>
-
-    </main>
+        </aside>
+      </div>
+    </section>
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
