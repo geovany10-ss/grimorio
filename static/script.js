@@ -61,6 +61,13 @@ const fields = {
   caracteristicas_habilidades: document.getElementById('caracteristicas_habilidades'),
   idiomas_proficiencias: document.getElementById('idiomas_proficiencias'),
   historia: document.getElementById('historia'),
+  skill_proficiencies_input: document.getElementById('skill_proficiencies_input'),
+  armor_select: document.getElementById('armor_select'),
+  shield_equipped: document.getElementById('shield_equipped'),
+  armor_notes: document.getElementById('armor_notes'),
+  weapon_select: document.getElementById('weapon_select'),
+  weapon_attack_preview: document.getElementById('weapon_attack_preview'),
+  weapon_damage_preview: document.getElementById('weapon_damage_preview'),
 
   selected_spells_text: document.getElementById('selected_spells_text')
 };
@@ -141,6 +148,108 @@ const ATTR_LABELS = {
   inteligencia: 'Inteligência',
   sabedoria: 'Sabedoria',
   carisma: 'Carisma'
+};
+
+
+const SKILL_TO_ATTR = {
+  'Acrobacia': 'destreza',
+  'Arcanismo': 'inteligencia',
+  'Atletismo': 'forca',
+  'Atuação': 'carisma',
+  'Blefar': 'carisma',
+  'Furtividade': 'destreza',
+  'História': 'inteligencia',
+  'Intimidação': 'carisma',
+  'Intuição': 'sabedoria',
+  'Investigação': 'inteligencia',
+  'Lidar com Animais': 'sabedoria',
+  'Medicina': 'sabedoria',
+  'Natureza': 'inteligencia',
+  'Percepção': 'sabedoria',
+  'Persuasão': 'carisma',
+  'Prestidigitação': 'destreza',
+  'Religião': 'inteligencia',
+  'Sobrevivência': 'sabedoria'
+};
+
+const CLASS_SAVE_PROFICIENCIES = {
+  'Bárbaro': ['forca', 'constituicao'],
+  'Bardo': ['destreza', 'carisma'],
+  'Bruxo': ['sabedoria', 'carisma'],
+  'Clérigo': ['sabedoria', 'carisma'],
+  'Druida': ['inteligencia', 'sabedoria'],
+  'Feiticeiro': ['constituicao', 'carisma'],
+  'Guerreiro': ['forca', 'constituicao'],
+  'Ladino': ['destreza', 'inteligencia'],
+  'Mago': ['inteligencia', 'sabedoria'],
+  'Monge': ['forca', 'destreza'],
+  'Paladino': ['sabedoria', 'carisma'],
+  'Patrulheiro': ['forca', 'destreza']
+};
+
+const ARMOR_CATALOG = {
+  'Túnica / tecido': { type: 'roupa', base: 10, dexMode: 'full', note: 'Sem armadura, visual de tecido ou pano.' },
+  'Armadura acolchoada': { type: 'leve', base: 11, dexMode: 'full', note: 'Leve, discreta e simples.' },
+  'Armadura de couro': { type: 'leve', base: 11, dexMode: 'full', note: 'Leve e flexível.' },
+  'Couro batido': { type: 'leve', base: 12, dexMode: 'full', note: 'Leve reforçada.' },
+  'Gibão de peles': { type: 'media', base: 12, dexMode: 'max2', note: 'Média, comum para bárbaros e patrulheiros.' },
+  'Cota de escamas': { type: 'media', base: 14, dexMode: 'max2', note: 'Média de escamas metálicas.' },
+  'Peitoral': { type: 'media', base: 14, dexMode: 'max2', note: 'Média e versátil.' },
+  'Meia-armadura': { type: 'media', base: 15, dexMode: 'max2', note: 'Média pesada.' },
+  'Cota de anéis': { type: 'pesada', base: 14, dexMode: 'none', note: 'Pesada simples.' },
+  'Cota de malha': { type: 'pesada', base: 16, dexMode: 'none', note: 'Pesada clássica.' },
+  'Brunea': { type: 'pesada', base: 17, dexMode: 'none', note: 'Pesada robusta.' },
+  'Armadura de placas': { type: 'pesada', base: 18, dexMode: 'none', note: 'Pesada máxima.' }
+};
+
+const CLASS_ARMOR_PROFICIENCIES = {
+  'Bárbaro': ['roupa', 'leve', 'media', 'escudo'],
+  'Bardo': ['roupa', 'leve'],
+  'Bruxo': ['roupa', 'leve'],
+  'Clérigo': ['roupa', 'leve', 'media', 'escudo'],
+  'Druida': ['roupa', 'leve', 'media', 'escudo'],
+  'Feiticeiro': ['roupa'],
+  'Guerreiro': ['roupa', 'leve', 'media', 'pesada', 'escudo'],
+  'Ladino': ['roupa', 'leve'],
+  'Mago': ['roupa'],
+  'Monge': ['roupa'],
+  'Paladino': ['roupa', 'leve', 'media', 'pesada', 'escudo'],
+  'Patrulheiro': ['roupa', 'leve', 'media', 'escudo']
+};
+
+const WEAPON_CATALOG = {
+  'Adaga': { damage: '1d4 perfurante', category: 'simples', mode: 'finesse', notes: 'Acuidade, arremesso, leve' },
+  'Bordão': { damage: '1d6 concussão', altDamage: '1d8 concussão', category: 'simples', mode: 'strength', notes: 'Versátil' },
+  'Clava': { damage: '1d4 concussão', category: 'simples', mode: 'strength', notes: 'Leve' },
+  'Maça': { damage: '1d6 concussão', category: 'simples', mode: 'strength', notes: 'Simples' },
+  'Lança': { damage: '1d6 perfurante', altDamage: '1d8 perfurante', category: 'simples', mode: 'strength', notes: 'Arremesso, versátil' },
+  'Machadinha': { damage: '1d6 cortante', category: 'simples', mode: 'strength', notes: 'Leve, arremesso' },
+  'Arco curto': { damage: '1d6 perfurante', category: 'simples', mode: 'dexterity', notes: 'Munição, duas mãos' },
+  'Besta leve': { damage: '1d8 perfurante', category: 'simples', mode: 'dexterity', notes: 'Munição, recarga, duas mãos' },
+  'Espada curta': { damage: '1d6 perfurante', category: 'marcial', mode: 'finesse', notes: 'Acuidade, leve' },
+  'Espada longa': { damage: '1d8 cortante', altDamage: '1d10 cortante', category: 'marcial', mode: 'strength', notes: 'Versátil' },
+  'Espada grande': { damage: '2d6 cortante', category: 'marcial', mode: 'strength', notes: 'Pesada, duas mãos' },
+  'Machado de batalha': { damage: '1d8 cortante', altDamage: '1d10 cortante', category: 'marcial', mode: 'strength', notes: 'Versátil' },
+  'Machado grande': { damage: '1d12 cortante', category: 'marcial', mode: 'strength', notes: 'Pesada, duas mãos' },
+  'Martelo de guerra': { damage: '1d8 concussão', altDamage: '1d10 concussão', category: 'marcial', mode: 'strength', notes: 'Versátil' },
+  'Rapieira': { damage: '1d8 perfurante', category: 'marcial', mode: 'finesse', notes: 'Acuidade' },
+  'Arco longo': { damage: '1d8 perfurante', category: 'marcial', mode: 'dexterity', notes: 'Pesada, munição, duas mãos' },
+  'Besta pesada': { damage: '1d10 perfurante', category: 'marcial', mode: 'dexterity', notes: 'Pesada, munição, recarga, duas mãos' }
+};
+
+const CLASS_WEAPON_PROFICIENCIES = {
+  'Bárbaro': ['simples', 'marcial'],
+  'Bardo': ['simples', 'Adaga', 'Espada curta', 'Rapieira', 'Arco curto'],
+  'Bruxo': ['simples'],
+  'Clérigo': ['simples'],
+  'Druida': ['simples'],
+  'Feiticeiro': ['Adaga', 'Dardo', 'Funda', 'Bordão', 'Besta leve'],
+  'Guerreiro': ['simples', 'marcial'],
+  'Ladino': ['simples', 'Espada curta', 'Rapieira', 'Arco curto', 'Besta leve'],
+  'Mago': ['Adaga', 'Dardo', 'Funda', 'Bordão', 'Besta leve'],
+  'Monge': ['simples', 'Espada curta'],
+  'Paladino': ['simples', 'marcial'],
+  'Patrulheiro': ['simples', 'marcial']
 };
 
 const CLASS_HIT_DICE = { 'Bárbaro':12, 'Bardo':8, 'Bruxo':8, 'Clérigo':8, 'Druida':8, 'Feiticeiro':6, 'Guerreiro':10, 'Ladino':8, 'Mago':6, 'Monge':8, 'Paladino':10, 'Patrulheiro':10 };
@@ -483,6 +592,114 @@ function updateAttributeModifiers() {
   });
 }
 
+
+function normalizeName(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function parseCommaList(value) {
+  return String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
+}
+
+function isWeaponProficient(className, weaponName) {
+  const rules = CLASS_WEAPON_PROFICIENCIES[className] || [];
+  const weapon = WEAPON_CATALOG[weaponName];
+  if (!weapon) return false;
+  return rules.includes(weaponName) || rules.includes(weapon.category);
+}
+
+function getWeaponAbilityMod(weaponName) {
+  const weapon = WEAPON_CATALOG[weaponName];
+  const attrs = getFinalAttributes();
+  if (!weapon) return 0;
+  if (weapon.mode === 'dexterity') return calculateModifier(attrs.destreza);
+  if (weapon.mode === 'finesse') return Math.max(calculateModifier(attrs.forca), calculateModifier(attrs.destreza));
+  return calculateModifier(attrs.forca);
+}
+
+function calculateArmorClassFromSelection() {
+  const armorName = fields.armor_select?.value || 'Túnica / tecido';
+  const armor = ARMOR_CATALOG[armorName] || ARMOR_CATALOG['Túnica / tecido'];
+  const dexMod = calculateModifier(getFinalAttributes().destreza);
+  let ac = armor.base;
+  if (armor.dexMode === 'full') ac += dexMod;
+  else if (armor.dexMode === 'max2') ac += Math.min(dexMod, 2);
+  if ((fields.shield_equipped?.value || 'Não') === 'Sim') ac += 2;
+  return ac;
+}
+
+function updateArmorOptions() {
+  const className = fields.classe.value;
+  const profs = CLASS_ARMOR_PROFICIENCIES[className] || ['roupa'];
+  const current = fields.armor_select?.value;
+  const options = Object.entries(ARMOR_CATALOG).filter(([name, armor]) => {
+    if (armor.type === 'roupa') return true;
+    return profs.includes(armor.type);
+  });
+  fields.armor_select.innerHTML = options.map(([name]) => `<option value="${name}">${name}</option>`).join('');
+  if (current && options.some(([name]) => name === current)) fields.armor_select.value = current;
+  else fields.armor_select.value = options[0]?.[0] || 'Túnica / tecido';
+  const armor = ARMOR_CATALOG[fields.armor_select.value] || ARMOR_CATALOG['Túnica / tecido'];
+  const shieldAllowed = profs.includes('escudo');
+  if (!shieldAllowed) fields.shield_equipped.value = 'Não';
+  fields.shield_equipped.disabled = !shieldAllowed;
+  fields.armor_notes.value = `${armor.type.toUpperCase()} • ${armor.note}` + (shieldAllowed ? '' : ' • Esta classe não usa escudo.');
+}
+
+function updateWeaponOptions() {
+  const className = fields.classe.value;
+  const rules = CLASS_WEAPON_PROFICIENCIES[className] || [];
+  const current = fields.weapon_select?.value;
+  const options = Object.entries(WEAPON_CATALOG).filter(([name, weapon]) => rules.includes(name) || rules.includes(weapon.category));
+  fields.weapon_select.innerHTML = '<option value="">Selecione</option>' + options.map(([name]) => `<option value="${name}">${name}</option>`).join('');
+  if (current && options.some(([name]) => name === current)) fields.weapon_select.value = current;
+  updateWeaponPreview();
+}
+
+function updateWeaponPreview() {
+  const weaponName = fields.weapon_select?.value;
+  if (!weaponName || !WEAPON_CATALOG[weaponName]) {
+    fields.weapon_attack_preview.value = '—';
+    fields.weapon_damage_preview.value = '—';
+    return;
+  }
+  const weapon = WEAPON_CATALOG[weaponName];
+  const mod = getWeaponAbilityMod(weaponName);
+  const prof = isWeaponProficient(fields.classe.value, weaponName) ? Number(fields.proficiencia.value || 2) : 0;
+  fields.weapon_attack_preview.value = `${formatModifier(mod + prof)} para acertar`;
+  fields.weapon_damage_preview.value = `${weapon.damage} ${mod >=0 ? '+'+mod : mod}${weapon.altDamage ? ` • Versátil: ${weapon.altDamage} ${mod >=0 ? '+'+mod : mod}` : ''}`;
+}
+
+function appendSelectedWeaponToAttacks() {
+  const weaponName = fields.weapon_select?.value;
+  if (!weaponName || !WEAPON_CATALOG[weaponName]) return;
+  const weapon = WEAPON_CATALOG[weaponName];
+  const mod = getWeaponAbilityMod(weaponName);
+  const prof = isWeaponProficient(fields.classe.value, weaponName) ? Number(fields.proficiencia.value || 2) : 0;
+  const attack = `${weaponName} ${formatModifier(mod + prof)} — ${weapon.damage} ${mod >=0 ? '+'+mod : mod}${weapon.altDamage ? ` | versátil ${weapon.altDamage} ${mod >=0 ? '+'+mod : mod}` : ''}${weapon.notes ? ` (${weapon.notes})` : ''}`;
+  fields.ataques.value = fields.ataques.value.trim() ? `${fields.ataques.value}\n${attack}` : attack;
+  updateSheetPreview();
+}
+
+function updateAutomaticSavesAndSkills() {
+  const attrs = getFinalAttributes();
+  const prof = Number(fields.proficiencia.value || 2);
+  const saveProfs = new Set(CLASS_SAVE_PROFICIENCIES[fields.classe.value] || []);
+  const saveText = Object.entries(ATTR_LABELS).map(([key, label]) => {
+    const total = calculateModifier(attrs[key]) + (saveProfs.has(key) ? prof : 0);
+    return `${label}: ${formatModifier(total)}${saveProfs.has(key) ? ' (prof.)' : ''}`;
+  }).join('\n');
+  fields.testes_resistencia.value = saveText;
+
+  const profSkills = new Set(parseCommaList(fields.skill_proficiencies_input?.value).map(normalizeName));
+  const skillsText = Object.entries(SKILL_TO_ATTR).map(([skill, attrKey]) => {
+    const proficient = profSkills.has(normalizeName(skill));
+    const total = calculateModifier(attrs[attrKey]) + (proficient ? prof : 0);
+    return `${skill} (${ATTR_LABELS[attrKey]}): ${formatModifier(total)}${proficient ? ' (prof.)' : ''}`;
+  }).join('\n');
+  fields.pericias.value = skillsText;
+}
+
 function updateRaceBonusLog() {
   const race = fields.raca.value;
   const subrace = fields.subraca.value;
@@ -682,6 +899,7 @@ function updateSheetPreview() {
   sheetMeta4El.textContent = `CA: ${fields.ca.value || 10}`;
   sheetMeta5El.textContent = `Iniciativa: ${formatModifier(Number(fields.iniciativa.value || 0))}`;
   sheetMeta6El.textContent = `Passiva: ${fields.sabedoria_passiva.value || 10}`;
+  const armorLabel = fields.armor_select?.value ? `Armadura: ${fields.armor_select.value}${fields.shield_equipped.value === 'Sim' ? ' + Escudo' : ''}` : 'Armadura: —';
 
   sheetAttributesGridEl.innerHTML = '';
   Object.entries(ATTR_LABELS).forEach(([key, label]) => {
@@ -700,7 +918,10 @@ function updateSheetPreview() {
       }).join('\n')
     : 'Nenhuma magia selecionada.';
   sheetSpellsEl.textContent = spellSummary;
-  sheetHistoryEl.textContent = safeValue(fields.historia.value, 'Nenhuma história adicionada ainda.');
+  sheetHistoryEl.textContent = `${armorLabel}
+Arma selecionada: ${fields.weapon_select.value || '—'}${fields.weapon_damage_preview.value ? ` • ${fields.weapon_damage_preview.value}` : ''}
+
+${safeValue(fields.historia.value, 'Nenhuma história adicionada ainda.')}`;
 
   previewVidaEl.textContent = fields.vida_max.value || '10';
   previewCaEl.textContent = fields.ca.value || '10';
@@ -893,6 +1114,13 @@ function collectFormData() {
     caracteristicas_habilidades: fields.caracteristicas_habilidades.value.trim(),
     idiomas_proficiencias: fields.idiomas_proficiencias.value.trim(),
     historia: fields.historia.value.trim(),
+    skill_proficiencies_input: fields.skill_proficiencies_input.value.trim(),
+    armor_select: fields.armor_select.value,
+    shield_equipped: fields.shield_equipped.value,
+    armor_notes: fields.armor_notes.value,
+    weapon_select: fields.weapon_select.value,
+    weapon_attack_preview: fields.weapon_attack_preview.value,
+    weapon_damage_preview: fields.weapon_damage_preview.value,
 
     selected_spells: currentSpellSelection,
     selected_spells_text: fields.selected_spells_text.value.trim()
@@ -940,6 +1168,13 @@ function clearForm() {
   fields.caracteristicas_habilidades.value = '';
   fields.idiomas_proficiencias.value = '';
   fields.historia.value = '';
+  fields.skill_proficiencies_input.value = '';
+  fields.armor_select.value = '';
+  fields.shield_equipped.value = 'Não';
+  fields.armor_notes.value = '';
+  fields.weapon_select.value = '';
+  fields.weapon_attack_preview.value = '';
+  fields.weapon_damage_preview.value = '';
   fields.selected_spells_text.value = '';
 
   currentSpellSelection = [];
@@ -988,6 +1223,15 @@ function fillForm(payload) {
   fields.caracteristicas_habilidades.value = payload.caracteristicas_habilidades || '';
   fields.idiomas_proficiencias.value = payload.idiomas_proficiencias || '';
   fields.historia.value = payload.historia || '';
+  fields.skill_proficiencies_input.value = payload.skill_proficiencies_input || '';
+  updateArmorOptions();
+  fields.armor_select.value = payload.armor_select || fields.armor_select.value;
+  fields.shield_equipped.value = payload.shield_equipped || 'Não';
+  fields.armor_notes.value = payload.armor_notes || fields.armor_notes.value;
+  updateWeaponOptions();
+  fields.weapon_select.value = payload.weapon_select || '';
+  fields.weapon_attack_preview.value = payload.weapon_attack_preview || '';
+  fields.weapon_damage_preview.value = payload.weapon_damage_preview || '';
 
   currentSpellSelection = Array.isArray(payload.selected_spells) ? payload.selected_spells : [];
   fields.selected_spells_text.value = payload.selected_spells_text || currentSpellSelection.map((item) => item.name).join(', ');
@@ -1044,6 +1288,14 @@ function populateAlignments() {
   fields.alinhamento.innerHTML = ALIGNMENTS.map((item) => `<option value="${item}">${item}</option>`).join('');
 }
 
+function populateArmors() {
+  updateArmorOptions();
+}
+
+function populateWeapons() {
+  updateWeaponOptions();
+}
+
 // ------------------------------------------------------------
 // Eventos
 // ------------------------------------------------------------
@@ -1072,6 +1324,11 @@ fields.raca.addEventListener('change', () => { populateSubraces(); updatePreview
 fields.subraca.addEventListener('change', updatePreview);
 fields.classe.addEventListener('change', updatePreview);
 fields.nivel.addEventListener('input', updatePreview);
+fields.armor_select.addEventListener('change', updatePreview);
+fields.shield_equipped.addEventListener('change', updatePreview);
+fields.weapon_select.addEventListener('change', () => { updateWeaponPreview(); updateSheetPreview(); });
+fields.skill_proficiencies_input.addEventListener('input', updatePreview);
+document.getElementById('btn-add-weapon').addEventListener('click', () => { appendSelectedWeaponToAttacks(); setFeedback('Arma adicionada em Ataques e Magias.'); });
 Object.values(fields).forEach((field) => {
   if (!field) return;
   field.addEventListener('input', updatePreview);

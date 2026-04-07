@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Grupo de aventureiros entrando numa caverna enquanto olhos de dragão brilham ao fundo">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0d1423"/>
+      <stop offset="45%" stop-color="#151a28"/>
+      <stop offset="100%" stop-color="#070607"/>
+    </linearGradient>
+    <radialGradient id="torch" cx="50%" cy="55%" r="45%">
+      <stop offset="0%" stop-color="#ffd98c" stop-opacity="1"/>
+      <stop offset="25%" stop-color="#ffb347" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#d26a1e" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffcf72"/>
+      <stop offset="55%" stop-color="#ff4f17"/>
+      <stop offset="100%" stop-color="#8a1300" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- Montanhas / entrada -->
+  <path d="M0 280 C180 220 290 250 390 210 C530 150 730 180 850 110 C1020 20 1240 60 1400 180 C1510 260 1570 320 1600 350 L1600 900 L0 900 Z" fill="#151312"/>
+  <path d="M0 360 C160 300 320 360 450 300 C600 230 750 260 900 210 C1050 160 1240 190 1380 310 C1470 390 1540 450 1600 520 L1600 900 L0 900 Z" fill="#0c0a0a"/>
+
+  <!-- Caverna -->
+  <path d="M370 260 C520 120 1110 120 1270 270 C1380 370 1420 540 1390 720 C1120 820 560 835 255 730 C225 560 260 390 370 260 Z" fill="#040304"/>
+  <ellipse cx="825" cy="560" rx="500" ry="220" fill="#090708"/>
+
+  <!-- brilho dos olhos -->
+  <ellipse cx="710" cy="360" rx="120" ry="75" fill="url(#eyeGlow)" filter="url(#blur)"/>
+  <ellipse cx="960" cy="350" rx="120" ry="75" fill="url(#eyeGlow)" filter="url(#blur)"/>
+  <ellipse cx="710" cy="360" rx="70" ry="34" fill="#ff9a3c"/>
+  <ellipse cx="960" cy="350" rx="70" ry="34" fill="#ff9a3c"/>
+  <path d="M690 335 Q710 360 690 385" stroke="#2b0c00" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M940 325 Q960 350 940 375" stroke="#2b0c00" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M620 330 Q710 280 805 320" stroke="#2a1509" stroke-width="18" fill="none" opacity="0.8"/>
+  <path d="M870 315 Q955 275 1045 320" stroke="#2a1509" stroke-width="18" fill="none" opacity="0.8"/>
+
+  <!-- neblina / luz -->
+  <ellipse cx="640" cy="680" rx="350" ry="150" fill="rgba(255,170,80,0.15)"/>
+  <circle cx="520" cy="660" r="250" fill="url(#torch)"/>
+
+  <!-- chão -->
+  <path d="M0 760 C180 720 290 760 430 720 C620 665 820 690 980 715 C1210 750 1400 700 1600 760 L1600 900 L0 900 Z" fill="#17110d"/>
+
+  <!-- aventureiros -->
+  <g transform="translate(440 630)">
+    <ellipse cx="0" cy="105" rx="42" ry="18" fill="#090909" opacity="0.5"/>
+    <path d="M-18 30 L10 20 L30 98 L-5 104 Z" fill="#40362d"/>
+    <circle cx="0" cy="5" r="18" fill="#221a16"/>
+    <path d="M-28 40 L-10 26 L-50 90 Z" fill="#6b5d49"/>
+    <rect x="28" y="38" width="8" height="85" rx="4" fill="#2f251d"/>
+    <path d="M25 20 L55 -25 L70 -10 L40 25 Z" fill="#5b3b15"/>
+    <path d="M45 -32 C60 -60 80 -55 88 -25 C82 -4 57 -2 45 -32 Z" fill="#ffbb57"/>
+    <path d="M45 -32 C58 -48 70 -46 76 -25 C70 -13 55 -12 45 -32 Z" fill="#fff0a6"/>
+  </g>
+
+  <g transform="translate(330 665) scale(0.9)">
+    <ellipse cx="0" cy="90" rx="40" ry="15" fill="#090909" opacity="0.45"/>
+    <circle cx="0" cy="0" r="18" fill="#241d18"/>
+    <path d="M-16 28 L18 28 L28 88 L-25 86 Z" fill="#2a5d66"/>
+    <path d="M20 38 L72 10 L78 23 L30 50 Z" fill="#665342"/>
+    <path d="M-22 40 L-56 66 L-63 54 L-28 30 Z" fill="#665342"/>
+  </g>
+
+  <g transform="translate(610 685) scale(1.05)">
+    <ellipse cx="0" cy="82" rx="36" ry="14" fill="#090909" opacity="0.45"/>
+    <circle cx="0" cy="0" r="16" fill="#261d17"/>
+    <path d="M-18 24 L20 24 L32 78 L-30 78 Z" fill="#5d4a35"/>
+    <path d="M24 28 L64 -16 L74 -8 L38 36 Z" fill="#7f7a72"/>
+  </g>
+
+  <!-- texto sutil -->
+  <text x="70" y="120" font-family="Georgia, serif" font-size="48" fill="#f0d28b" opacity="0.95">O Grimório começa onde a tocha encontra o abismo.</text>
+  <text x="72" y="170" font-family="Georgia, serif" font-size="24" fill="#cbbca8" opacity="0.9">E onde todo herói percebe que havia um dragão observando desde o primeiro passo.</text>
+</svg>
