@@ -631,18 +631,6 @@ function safeValue(value, fallback = '—') {
   return text || fallback;
 }
 
-
-function compactPrintText(value) {
-  const safe = safeValue(value, '—');
-  if (safe === '—') return safe;
-  return String(safe)
-    .split(/\n+/)
-    .map(item => item.trim())
-    .filter(Boolean)
-    .join(' • ');
-}
-
-
 function goToPage(pageName) {
   pages.forEach((page) => page.classList.toggle('active', page.id === `page-${pageName}`));
   navButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.page === pageName));
@@ -1173,6 +1161,22 @@ ${safeValue(fields.historia.value, 'Nenhuma história adicionada ainda.')}`;
   updatePrintSheet();
 }
 
+function setPrintBoxState(element, value, emptyFallback = '—') {
+  if (!element) return;
+  const normalized = (value ?? '').toString().trim();
+  const finalValue = normalized || emptyFallback;
+  if ('textContent' in element) element.textContent = finalValue;
+  const box = element.closest('.print-box');
+  if (box) {
+    box.dataset.empty = finalValue === emptyFallback ? 'true' : 'false';
+    if (finalValue === emptyFallback && box.classList.contains('optional-print-box')) {
+      box.style.display = 'none';
+    } else {
+      box.style.display = '';
+    }
+  }
+}
+
 function updatePrintSheet() {
   if (!printNomeEl) return;
 
@@ -1180,13 +1184,13 @@ function updatePrintSheet() {
   const level = Number(fields.nivel.value || 1);
   const armorLabel = fields.armor_select?.value ? `${fields.armor_select.value}${fields.shield_equipped.value === 'Sim' ? ' + Escudo' : ''}` : '—';
 
-  printNomeEl.textContent = safeValue(fields.nome.value);
-  printClasseNivelEl.textContent = `${safeValue(fields.classe.value)} ${level}`;
-  printAntecedenteEl.textContent = safeValue(fields.antecedente.value);
-  printJogadorEl.textContent = safeValue(fields.nome_jogador.value);
-  printRacaEl.textContent = fields.subraca.value ? `${safeValue(fields.raca.value)} / ${fields.subraca.value}` : safeValue(fields.raca.value);
-  printTendenciaEl.textContent = safeValue(fields.alinhamento.value);
-  printXpEl.textContent = safeValue(fields.xp.value || '0');
+  setPrintBoxState(printNomeEl, safeValue(fields.nome.value));
+  setPrintBoxState(printClasseNivelEl, `${safeValue(fields.classe.value)} ${level}`);
+  setPrintBoxState(printAntecedenteEl, safeValue(fields.antecedente.value));
+  setPrintBoxState(printJogadorEl, safeValue(fields.nome_jogador.value));
+  setPrintBoxState(printRacaEl, fields.subraca.value ? `${safeValue(fields.raca.value)} / ${fields.subraca.value}` : safeValue(fields.raca.value));
+  setPrintBoxState(printTendenciaEl, safeValue(fields.alinhamento.value));
+  setPrintBoxState(printXpEl, safeValue(fields.xp.value || '0'));
 
   printAttrGridEl.innerHTML = '';
   Object.entries(ATTR_LABELS).forEach(([key, label]) => {
@@ -1196,56 +1200,44 @@ function updatePrintSheet() {
     printAttrGridEl.appendChild(box);
   });
 
-  printInspiracaoEl.textContent = '—';
-  printProficienciaEl.textContent = `+${fields.proficiencia.value || 2}`;
-  printSavesEl.textContent = compactPrintText(fields.testes_resistencia.value);
-  printSkillsEl.textContent = compactPrintText(fields.pericias.value);
-  printPassivaEl.textContent = fields.sabedoria_passiva.value || '10';
-  printCaEl.textContent = fields.ca.value || '10';
-  printIniciativaEl.textContent = formatModifier(Number(fields.iniciativa.value || 0));
-  printDeslocamentoEl.textContent = safeValue(fields.deslocamento.value, '9 m');
-  printPvTotalEl.textContent = fields.vida_max.value || '10';
-  printPvAtualEl.textContent = fields.vida_atual.value || '10';
-  printPvTempEl.textContent = fields.vida_temp.value || '0';
-  printHitDiceEl.textContent = safeValue(fields.dados_vida.value);
-  printDeathSuccessEl.textContent = '0';
-  printDeathFailEl.textContent = '0';
-  printAttacksEl.textContent = compactPrintText(fields.ataques.value);
-  printEquipmentEl.textContent = [armorLabel, compactPrintText(fields.equipamentos.value)].filter(Boolean).join(' • ');
-  printTraitsEl.textContent = compactPrintText(fields.tracos_personalidade.value);
-  printIdealsEl.textContent = compactPrintText(fields.ideais.value);
-  printBondsEl.textContent = compactPrintText(fields.ligacoes.value);
-  printFlawsEl.textContent = compactPrintText(fields.defeitos.value);
-  printFeaturesEl.textContent = [safeValue(fields.racial_traits_auto.value,''), safeValue(fields.special_resistances_auto.value,''), safeValue(fields.caracteristicas_habilidades.value,'')].filter(Boolean).join(' • ') || '—';
-  printLanguagesEl.textContent = [safeValue(fields.idiomas_auto.value,''), safeValue(fields.idiomas_proficiencias.value,'')].filter(Boolean).join(' • ') || '—';
-  printHistoryEl.textContent = compactPrintText(fields.historia.value || 'Nenhuma história registrada.');
-  printSpellClassEl.textContent = getSpellConfig(fields.classe.value) ? safeValue(fields.classe.value) : '—';
-  printSpellAbilityEl.textContent = getSpellConfig(fields.classe.value)?.ability ? ATTR_LABELS[getSpellConfig(fields.classe.value).ability] : '—';
-  printSpellDcEl.textContent = getSpellcastingStats() ? String(getSpellcastingStats().saveDC) : '—';
-  printSpellAttackEl.textContent = getSpellcastingStats() ? formatModifier(getSpellcastingStats().attackBonus) : '—';
+  setPrintBoxState(printInspiracaoEl, '');
+  setPrintBoxState(printProficienciaEl, `+${fields.proficiencia.value || 2}`);
+  setPrintBoxState(printSavesEl, safeValue(fields.testes_resistencia.value));
+  setPrintBoxState(printSkillsEl, safeValue(fields.pericias.value));
+  setPrintBoxState(printPassivaEl, fields.sabedoria_passiva.value || '10');
+  setPrintBoxState(printCaEl, fields.ca.value || '10');
+  setPrintBoxState(printIniciativaEl, formatModifier(Number(fields.iniciativa.value || 0)));
+  setPrintBoxState(printDeslocamentoEl, safeValue(fields.deslocamento.value, '9 m'));
+  setPrintBoxState(printPvTotalEl, fields.vida_max.value || '10');
+  setPrintBoxState(printPvAtualEl, fields.vida_atual.value || '10');
+  setPrintBoxState(printPvTempEl, fields.vida_temp.value || '0');
+  setPrintBoxState(printHitDiceEl, safeValue(fields.dados_vida.value));
+  setPrintBoxState(printDeathSuccessEl, '0');
+  setPrintBoxState(printDeathFailEl, '0');
+  setPrintBoxState(printAttacksEl, safeValue(fields.ataques.value));
+  setPrintBoxState(printEquipmentEl, `${armorLabel}\n${safeValue(fields.equipamentos.value)}`);
+  setPrintBoxState(printTraitsEl, safeValue(fields.tracos_personalidade.value));
+  setPrintBoxState(printIdealsEl, safeValue(fields.ideais.value));
+  setPrintBoxState(printBondsEl, safeValue(fields.ligacoes.value));
+  setPrintBoxState(printFlawsEl, safeValue(fields.defeitos.value));
+  setPrintBoxState(printFeaturesEl, [safeValue(fields.racial_traits_auto.value,''), safeValue(fields.special_resistances_auto.value,''), safeValue(fields.caracteristicas_habilidades.value,'')].filter(Boolean).join('\n\n'));
+  setPrintBoxState(printLanguagesEl, [safeValue(fields.idiomas_auto.value,''), safeValue(fields.idiomas_proficiencias.value,'')].filter(Boolean).join('\n\n'));
+  setPrintBoxState(printHistoryEl, safeValue(fields.historia.value, 'Nenhuma história registrada.'));
+  setPrintBoxState(printSpellClassEl, getSpellConfig(fields.classe.value) ? safeValue(fields.classe.value) : '');
+  setPrintBoxState(printSpellAbilityEl, getSpellConfig(fields.classe.value)?.ability ? ATTR_LABELS[getSpellConfig(fields.classe.value).ability] : '');
+  setPrintBoxState(printSpellDcEl, getSpellcastingStats() ? String(getSpellcastingStats().saveDC) : '');
+  setPrintBoxState(printSpellAttackEl, getSpellcastingStats() ? formatModifier(getSpellcastingStats().attackBonus) : '');
 
   const byLevel = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []};
   currentSpellSelection.forEach((item) => {
     if (byLevel[item.level]) byLevel[item.level].push(item.name);
   });
-  printCantripsEl.textContent = byLevel[0].length ? byLevel[0].join(', ') : '—';
-  printSpell1El.textContent = byLevel[1].length ? byLevel[1].join(', ') : '—';
-  printSpell2El.textContent = byLevel[2].length ? byLevel[2].join(', ') : '—';
-  printSpell3El.textContent = byLevel[3].length ? byLevel[3].join(', ') : '—';
-  printSpell4El.textContent = byLevel[4].length ? byLevel[4].join(', ') : '—';
-  printSpell5El.textContent = byLevel[5].length ? byLevel[5].join(', ') : '—';
-
-  [
-    [printCantripsEl, byLevel[0].length],
-    [printSpell1El, byLevel[1].length],
-    [printSpell2El, byLevel[2].length],
-    [printSpell3El, byLevel[3].length],
-    [printSpell4El, byLevel[4].length],
-    [printSpell5El, byLevel[5].length]
-  ].forEach(([el, hasContent]) => {
-    if (!el || !el.parentElement) return;
-    el.parentElement.style.display = hasContent || el === printCantripsEl ? 'block' : 'none';
-  });
+  setPrintBoxState(printCantripsEl, byLevel[0].length ? byLevel[0].join(', ') : '');
+  setPrintBoxState(printSpell1El, byLevel[1].length ? byLevel[1].join(', ') : '');
+  setPrintBoxState(printSpell2El, byLevel[2].length ? byLevel[2].join(', ') : '');
+  setPrintBoxState(printSpell3El, byLevel[3].length ? byLevel[3].join(', ') : '');
+  setPrintBoxState(printSpell4El, byLevel[4].length ? byLevel[4].join(', ') : '');
+  setPrintBoxState(printSpell5El, byLevel[5].length ? byLevel[5].join(', ') : '');
 }
 
 // ------------------------------------------------------------
