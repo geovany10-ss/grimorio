@@ -139,6 +139,14 @@
     .sheet-box div, .sheet-box p { white-space: pre-wrap; line-height: 1.5; }
 
     .spell-selector-section { max-height: 460px; overflow: auto; border-radius: 18px; }
+    .skill-selector-section { max-height: 340px; }
+    .skill-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .skill-item {
+      display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+      border-radius:14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+    }
+    .skill-item small { display:block; color: var(--muted); margin-top:4px; }
+    .skill-item.auto { border-color: rgba(200,155,60,.35); background: rgba(200,155,60,.08); }
     .spell-group { margin-bottom: 14px; }
     .spell-group h5 { color: var(--accent-2); margin-bottom: 10px; font-size: .95rem; }
     .spell-list { display: grid; gap: 8px; }
@@ -277,7 +285,7 @@
       margin-bottom: 24px;
       background:
         linear-gradient(90deg, rgba(16,10,8,.88) 0%, rgba(16,10,8,.65) 36%, rgba(16,10,8,.18) 62%, rgba(16,10,8,.22) 100%),
-        url("{{ url_for('static', filename='hero-realistic.png') }}") center/cover no-repeat;
+        url("{{ url_for('static', filename='hero-clean.png') }}") center/cover no-repeat;
     }
 
     .showcase-copy {
@@ -317,6 +325,16 @@
       background: linear-gradient(180deg, rgba(29,17,13,.95), rgba(21,12,9,.98));
       border-color: rgba(160,103,66,.35);
       color: #f8ead3;
+    }
+
+    select, button {
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select option {
+      background: #2a160f;
+      color: #f7e6c8;
     }
 
     input::placeholder, textarea::placeholder {
@@ -422,9 +440,6 @@
             antes da magia romper a escuridão e antes da mesa cair na gargalhada por causa de um dado cruel,
             existe um nome, uma história e uma escolha. O Grimório Definitivo foi criado para guardar tudo isso.
           </p>
-          <div class="hero-actions" style="margin-top:18px;">
-            <button class="btn-primary" data-go-page="dashboard">Explorar o grimório</button>
-          </div>
         </div>
       </div>
 
@@ -589,9 +604,21 @@
                 <div class="field"><label for="ideais">Ideais</label><textarea id="ideais"></textarea></div>
                 <div class="field"><label for="ligacoes">Ligações</label><textarea id="ligacoes"></textarea></div>
                 <div class="field"><label for="defeitos">Defeitos</label><textarea id="defeitos"></textarea></div>
-                <div class="field full"><label for="skill_proficiencies_input">Perícias proficientes (separe por vírgula)</label><input id="skill_proficiencies_input" type="text" placeholder="Ex.: Percepção, Atletismo, Furtividade" /></div>
+                <div class="field full">
+                  <label>Perícias proficientes</label>
+                  <input id="skill_proficiencies_input" type="hidden" />
+                  <div class="helper-box" id="skill-auto-info">Proficiências automáticas de raça e classe aparecerão aqui.</div>
+                  <div class="panel spell-selector-section skill-selector-section">
+                    <div class="panel-body">
+                      <div id="skill-selector" class="skill-grid"></div>
+                    </div>
+                  </div>
+                </div>
                 <div class="field full"><label for="testes_resistencia">Testes de Resistência</label><textarea id="testes_resistencia" placeholder="Gerado automaticamente"></textarea></div>
                 <div class="field full"><label for="pericias">Perícias</label><textarea id="pericias" placeholder="Gerado automaticamente"></textarea></div>
+                <div class="field full"><label for="racial_traits_auto">Traços raciais automáticos</label><textarea id="racial_traits_auto" readonly placeholder="Gerado automaticamente"></textarea></div>
+                <div class="field full"><label for="special_resistances_auto">Resistências e sentidos especiais</label><textarea id="special_resistances_auto" readonly placeholder="Gerado automaticamente"></textarea></div>
+                <div class="field full"><label for="idiomas_auto">Idiomas automáticos</label><textarea id="idiomas_auto" readonly placeholder="Gerado automaticamente"></textarea></div>
                 <div class="field"><label for="weapon_select">Arma</label><select id="weapon_select"></select></div>
                 <div class="field"><label for="weapon_attack_preview">Ataque da arma</label><input id="weapon_attack_preview" type="text" readonly /></div>
                 <div class="field"><label for="weapon_damage_preview">Dano da arma</label><input id="weapon_damage_preview" type="text" readonly /></div>
