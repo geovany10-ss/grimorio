@@ -33,7 +33,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       padding: 16px 18px; border: 1px solid rgba(255,255,255,.06);
-      background: rgba(18,13,11,.92); backdrop-filter: blur(12px);
+      background: rgba(18,13,11,.985); backdrop-filter: none;
       border-radius: 22px; box-shadow: var(--shadow); position: sticky; top: 14px; z-index: 50; margin-bottom: 22px;
     }
 
@@ -58,25 +58,21 @@
     .btn-danger { background: rgba(208,90,87,.15); color: #ffd7d7; border: 1px solid rgba(208,90,87,.35); }
     .nav-btn.active { border-color: var(--accent); color: var(--accent-2); }
 
-    
-.page { 
-  display: none; animation: fadeIn .2s ease; position: relative; isolation:isolate;
-  border-radius: 24px; overflow: hidden; padding: 18px;
-  background-size: cover; background-position: center; background-repeat: no-repeat;
-  background-attachment: fixed;
-  min-height: 72vh;
-}
-.page.active { display: block; }
-.page::before {
-  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
-  background: linear-gradient(180deg, rgba(15,11,10,.42), rgba(15,11,10,.52));
-}
-.page > * { position: relative; z-index: 1; }
-#page-home { background-image:url("{{ url_for('static', filename='bg-home.jpg') }}"); }
-#page-dashboard { background-image:url("{{ url_for('static', filename='bg-dashboard.jpg') }}"); }
-#page-editor { background-image:url("{{ url_for('static', filename='bg-editor.jpg') }}"); }
-#page-print { background-image:url("{{ url_for('static', filename='bg-print.jpg') }}"); }
-
+    .page { display: none; animation: fadeIn .2s ease; position: relative; isolation:isolate; }
+    .page.active { display: block; }
+    .page > * { position: relative; z-index: 1; }
+    .page::before {
+      content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+      background-size:cover; background-position:center; background-repeat:no-repeat;
+      opacity:.24; filter:saturate(.95) contrast(1.02);
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.75), rgba(0,0,0,.18));
+      -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.75), rgba(0,0,0,.18));
+      border-radius: 24px;
+    }
+    #page-home::before { background-image:url("{{ url_for('static', filename='bg-home.jpg') }}"); }
+    #page-dashboard::before { background-image:url("{{ url_for('static', filename='bg-dashboard.jpg') }}"); }
+    #page-editor::before { background-image:url("{{ url_for('static', filename='bg-editor.jpg') }}"); }
+    #page-print::before { background-image:url("{{ url_for('static', filename='bg-print.jpg') }}"); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     .hero, .dashboard-grid, .editor-layout, .grid-2, .grid-3, .stats-grid, .sheet-grid, .attributes-grid { display: grid; gap: 16px; }
@@ -90,7 +86,7 @@
     .attributes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
     .panel, .hero-panel, .sheet-panel {
-      background: linear-gradient(180deg, rgba(34,23,18,.74), rgba(24,16,13,.68));
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
       border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius);
       box-shadow: var(--shadow); overflow: hidden;
     }
@@ -289,12 +285,12 @@
       min-height: 280px;
       border-radius: 26px;
       overflow: hidden;
-      border: 1px solid rgba(157,100,64,.45);
-      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+      border: 1px solid rgba(157,100,64,.38);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
       margin-bottom: 24px;
       background:
-        linear-gradient(90deg, rgba(16,10,8,.88) 0%, rgba(16,10,8,.65) 36%, rgba(16,10,8,.18) 62%, rgba(16,10,8,.22) 100%),
-        url("{{ url_for('static', filename='hero-clean.png') }}") center/cover no-repeat;
+        linear-gradient(90deg, rgba(16,10,8,.58) 0%, rgba(16,10,8,.38) 36%, rgba(16,10,8,.08) 62%, rgba(16,10,8,.12) 100%);
+      backdrop-filter: blur(1px);
     }
 
     .showcase-copy {
@@ -327,7 +323,8 @@
     #page-dashboard .panel,
     #page-home .panel {
       background:
-        linear-gradient(180deg, rgba(44,24,17,.93), rgba(24,14,10,.95));
+        linear-gradient(180deg, rgba(44,24,17,.56), rgba(24,14,10,.62));
+      backdrop-filter: blur(3px);
     }
 
     input, select, textarea {
@@ -383,88 +380,60 @@
     }
 
     
-    
-.print-sheet {
-  background: linear-gradient(180deg, rgba(248,238,213,.99), rgba(235,220,191,.99));
-  color: #312016; border-radius: 18px; padding: 10px; border: 1px solid rgba(120,71,39,.22);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
-  font-size: 9px; line-height: 1.15;
-}
-.print-top-grid, .print-main-grid, .print-bottom-grid, .print-combat-grid, .print-spells-grid, .print-spells-levels, .print-attr-grid {
-  display:grid; gap:5px;
-}
-.print-top-grid { grid-template-columns: 2.2fr .95fr .82fr .82fr .78fr .78fr .5fr; margin-bottom: 6px; }
-.print-main-grid { grid-template-columns: 1.02fr 1.08fr 1.12fr; margin-bottom: 6px; align-items:start; }
-.print-left-col, .print-center-col, .print-right-col { display:grid; gap:5px; }
-.print-attr-grid { grid-template-columns: 1fr 1fr; }
-.print-combat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 5px; }
-.print-bottom-grid { grid-template-columns: 1fr 1.08fr; margin-bottom: 6px; }
-.print-spells-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 5px; }
-.print-spells-levels { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.print-box {
-  background: rgba(255,255,255,.34); border: 1px solid rgba(120,71,39,.18); border-radius: 10px; padding: 4px 6px;
-  min-height: 28px;
-}
-.print-box small { display:block; font-size:7px; color:#6e5541; margin-bottom:2px; text-transform:uppercase; letter-spacing:.03em; }
-.print-box strong { font-size: 9.3px; }
-.print-box div { white-space: pre-wrap; line-height: 1.1; font-size: 7.6px; }
-#print-skills, #print-saves { max-height: 170px; overflow: hidden; }
-#print-features, #print-history, #print-equipment, #print-languages, #print-attacks { max-height: 88px; overflow: hidden; }
-.print-right-col .print-box:nth-child(-n+4) { min-height: 36px; }
-.print-empty-lines { display:flex; flex-direction:column; gap:4px; margin-top:2px; }
-.print-empty-lines span { display:block; border-bottom:1px solid rgba(120,71,39,.45); height:10px; }
+    .print-sheet {
+      background: linear-gradient(180deg, rgba(248,238,213,.99), rgba(235,220,191,.99));
+      color: #312016; border-radius: 18px; padding: 12px; border: 1px solid rgba(120,71,39,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
+      font-size: 10px; line-height: 1.2;
+    }
+    .print-top-grid, .print-main-grid, .print-bottom-grid, .print-combat-grid, .print-spells-grid, .print-spells-levels, .print-attr-grid {
+      display:grid; gap:6px;
+    }
+    .print-top-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr 1fr 0.7fr; margin-bottom: 8px; }
+    .print-name { grid-column: span 1; }
+    .print-main-grid { grid-template-columns: 0.72fr 0.9fr 1fr; margin-bottom: 8px; align-items:start; }
+    .print-attr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .print-combat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 6px; }
+    .print-bottom-grid { grid-template-columns: 1fr 1fr; margin-bottom: 8px; }
+    .print-spells-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 6px; }
+    .print-spells-levels { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .print-box {
+      background: rgba(255,255,255,.34); border: 1px solid rgba(120,71,39,.18); border-radius: 10px; padding: 6px 7px;
+      min-height: 34px;
+    }
+    .print-box small { display:block; font-size:8.8px; color:#6e5541; margin-bottom:3px; text-transform:uppercase; letter-spacing:.03em; }
+    .print-box strong { font-size: 11px; }
+    .print-box div { white-space: pre-wrap; line-height: 1.2; font-size: 9.4px; }
 
-@media (max-width: 1100px) {
-  .print-top-grid, .print-main-grid, .print-bottom-grid, .print-spells-grid, .print-spells-levels, .print-combat-grid { grid-template-columns: 1fr; }
-  .print-attr-grid { grid-template-columns: 1fr 1fr; }
-}
-.print-name { grid-column: auto; }
+    @media (max-width: 1100px) {
+      .print-top-grid, .print-main-grid, .print-bottom-grid, .print-spells-grid, .print-spells-levels, .print-combat-grid { grid-template-columns: 1fr; }
+      .print-name { grid-column: auto; }
       .print-attr-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    @page { size: A4 portrait; margin: 6mm; }
+    @page { size: A4 portrait; margin: 12mm 6mm 8mm 6mm; }
 
-    
-@media print {
-  @page { size: A4 portrait; margin: 4mm; }
-  html, body { background:white !important; }
-  body { padding:0 !important; margin:0 !important; color:#2f1b12 !important; }
-  .topbar, #page-home, #page-dashboard, #page-editor { display:none !important; }
-  .page { display:none !important; }
-  #page-print { 
-    display:block !important; background:white !important; min-height:auto !important; 
-    padding:0 !important; border-radius:0 !important; overflow:visible !important;
-  }
-  #page-print::before { display:none !important; }
-  #page-print .panel { display:block !important; border:none !important; background:white !important; box-shadow:none !important; border-radius:0 !important; overflow:visible !important; }
-  #page-print .panel-header, #page-print .actions { display:none !important; }
-  #page-print .panel-body { padding:0 !important; }
-  .print-sheet, .print-box { box-shadow:none !important; break-inside: avoid; page-break-inside: avoid; }
-  .print-sheet { 
-    display:block !important; background:white !important; color:#2f1b12 !important; 
-    border:none !important; padding: 2mm !important; font-size: 8px !important; border-radius:0 !important;
-  }
-  .print-top-grid { grid-template-columns: 2.25fr .95fr .82fr .82fr .78fr .78fr .5fr !important; gap:3px !important; margin-bottom:3px !important; }
-  .print-main-grid { grid-template-columns: 1.02fr 1.08fr 1.12fr !important; gap:3px !important; margin-bottom:3px !important; }
-  .print-bottom-grid { grid-template-columns: 1fr 1.08fr !important; gap:3px !important; margin-bottom:3px !important; }
-  .print-spells-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap:3px !important; margin-bottom:3px !important; }
-  .print-spells-levels { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap:3px !important; }
-  .print-combat-grid { grid-template-columns: repeat(3, minmax(0,1fr)) !important; gap:3px !important; margin-bottom:3px !important; }
-  .print-attr-grid { grid-template-columns: 1fr 1fr !important; gap:3px !important; }
-  .print-box { 
-    background:white !important; border:1px solid #b7a08a !important; border-radius: 5px !important; 
-    padding:2px 4px !important; min-height: 16px !important; 
-  }
-  .print-box small, .print-box div, .print-box strong { color:#2f1b12 !important; }
-  .print-box small { font-size: 6px !important; margin-bottom: 1px !important; }
-  .print-box strong { font-size: 8px !important; }
-  .print-box div { font-size: 6.5px !important; line-height: 1.02 !important; }
-  .print-left-col, .print-center-col, .print-right-col { gap:3px !important; }
-  #print-skills, #print-saves { max-height: 108px !important; overflow: hidden !important; }
-  #print-features, #print-history, #print-equipment, #print-languages, #print-attacks { max-height: 48px !important; overflow: hidden !important; }
-  .optional-print-box[data-empty="true"] { display:none !important; }
-  .print-empty-lines span { height:6px !important; }
-}
+    @media print {
+      html, body { background:white !important; }
+      body { padding:0 !important; margin:0 !important; color:#2f1b12 !important; }
+      .topbar, #page-home, #page-dashboard, #page-editor { display:none !important; }
+      .page { display:none !important; }
+      #page-print { display:block !important; }
+      #page-print::before { display:none !important; }
+      #page-print .panel { display:block !important; border:none !important; background:white !important; box-shadow:none !important; }
+      #page-print .panel-header, #page-print .actions { display:none !important; }
+      #page-print .panel-body { padding:0 !important; }
+      .print-sheet, .print-box { box-shadow:none !important; break-inside: avoid; page-break-inside: avoid; }
+      .print-sheet { display:block !important; background:white !important; color:#2f1b12 !important; border:none !important; padding: 8mm 4px 4px 4px !important; font-size: 9px !important; }
+      .print-top-grid, .print-main-grid, .print-bottom-grid, .print-spells-grid, .print-spells-levels, .print-combat-grid { gap:4px !important; margin-bottom:4px !important; }
+      .print-box { background:white !important; border:1px solid #b7a08a !important; border-radius: 6px !important; padding:6px 7px !important; min-height: 28px !important; }
+      .print-box small, .print-box div, .print-box strong { color:#2f1b12 !important; }
+      .print-box small { font-size: 7.4px !important; margin-bottom: 2px !important; }
+      .print-box strong { font-size: 9.8px !important; }
+      .print-box div { font-size: 7.8px !important; line-height: 1.12 !important; }
+      #print-skills, #print-saves, #print-features, #print-history, #print-equipment, #print-languages, #print-attacks { max-height: none !important; }
+    }
+
 
   </style>
 </head>
