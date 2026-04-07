@@ -168,6 +168,8 @@ const SPELL_DAMAGE_DETAILS = {
   'Chicote de Espinhos': '1d6 perfurante',
   'Produzir Chamas': '1d8 fogo',
   'Rajada Mística': '1d10 energia',
+  'Lâmina Trovejante': 'arma + 1d8 trovejante',
+  'Lâmina Ardente': 'arma + 1d8 fogo',
   'Mísseis Mágicos': '3×(1d4+1) energia',
   'Mãos Flamejantes': '3d6 fogo',
   'Raio Adoecente': '2d8 veneno',
@@ -178,29 +180,43 @@ const SPELL_DAMAGE_DETAILS = {
   'Esfera Flamejante': '2d6 fogo',
   'Lâmina Flamejante': '3d6 fogo',
   'Raio Lunar': '2d10 radiante',
+  'Nuvem de Adagas': '4d4 cortante',
+  'Seta Ácida de Melf': '4d4 ácido + 2d4 ácido',
+  'Mãos de Hadar': '2d6 necrótico',
   'Bola de Fogo': '8d6 fogo',
   'Relâmpago': '8d6 elétrico',
   'Tempestade de Gelo': '2d8 concussão + 4d6 frio',
   'Muralha de Fogo': '5d8 fogo',
+  'Blight': '8d8 necrótico',
   'Cone de Frio': '8d8 frio',
   'Golpe Flamejante': '4d6 fogo + 4d6 radiante',
   'Praga': '8d8 necrótico',
+  'Coluna de Chamas': '4d6 fogo + 4d6 radiante',
   'Corrente de Relâmpagos': '10d8 elétrico',
   'Desintegrar': '10d6 + 40 força',
+  'Círculo da Morte': '8d6 necrótico',
   'Dedo da Morte': '7d8 + 30 necrótico',
   'Explosão Solar': '12d6 radiante',
   'Repreensão Infernal': '2d10 fogo',
   'Marca do Caçador': '+1d6 por ataque',
   'Golpe Trovejante': '2d6 trovejante',
   'Cordão de Flechas': '1d6 perfurante',
-  'Golpe do Vento': '6d10 força'
+  'Golpe do Vento': '6d10 força',
+  'Arma Espiritual': '1d8 + modificador',
+  'Guardião da Fé': '20 radiante',
+  'Nuvem Fétida': 'sem dano direto',
+  'Fogo Feérico': 'sem dano direto',
+  'Palavra Curativa': '1d4 + modificador',
+  'Curar Ferimentos': '1d8 + modificador',
+  'Palavra Curativa em Massa': '1d4 + modificador',
+  'Curar Ferimentos em Massa': '3d8 + modificador',
+  'Cura Completa': '70 cura',
+  'Cura Completa em Massa': '700 cura divididos'
 };
 
-// Observação honesta:
-// Este banco de magias foi montado a partir dos dados que você já tinha no código
-// e dos trechos do Livro do Jogador enviados na conversa. Ele cobre um catálogo grande
-// e funcional para o site, com níveis, limites e vários danos famosos, mas não é uma
-// transcrição completa de todas as descrições do livro.
+// Banco principal de magias usado pelo seletor do editor.
+// Nesta expansão, o catálogo ficou bem mais amplo para as classes conjuradoras
+// principais, incluindo mais opções por círculo e mais anotações de dano quando cabem.
 const SPELL_SLOTS_BY_CLASS = {
   full: {1:[2],2:[3],3:[4,2],4:[4,3],5:[4,3,2],6:[4,3,3],7:[4,3,3,1],8:[4,3,3,2],9:[4,3,3,3,1],10:[4,3,3,3,2],11:[4,3,3,3,2,1],12:[4,3,3,3,2,1],13:[4,3,3,3,2,1,1],14:[4,3,3,3,2,1,1],15:[4,3,3,3,2,1,1,1],16:[4,3,3,3,2,1,1,1],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]},
   half: {1:[],2:[2],3:[3],4:[3],5:[4,2],6:[4,2],7:[4,3],8:[4,3],9:[4,3,2],10:[4,3,2],11:[4,3,3],12:[4,3,3],13:[4,3,3,1],14:[4,3,3,1],15:[4,3,3,2],16:[4,3,3,2],17:[4,3,3,3,1],18:[4,3,3,3,1],19:[4,3,3,3,2],20:[4,3,3,3,2]},
@@ -208,14 +224,142 @@ const SPELL_SLOTS_BY_CLASS = {
 };
 
 const SPELL_DATA = {
-  Mago: { ability: 'inteligencia', mode: 'prepared', cantripsByLevel: {1:3,4:4,10:5}, maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9}, spells: { 0:['Luz','Mãos Mágicas','Prestidigitação','Raio de Gelo','Ilusão Menor','Toque Chocante','Raio de Fogo','Mensagem','Consertar'], 1:['Armadura Arcana','Mísseis Mágicos','Escudo','Sono','Identificar','Detectar Magia','Compreender Idiomas','Disfarçar-se','Queda Suave','Enfeitiçar Pessoa','Névoa Obscurecente','Servo Invisível','Encontrar Familiar','Raio Adoecente','Mãos Flamejantes'], 2:['Passo Nebuloso','Imagem Espelhada','Invisibilidade','Raio Ardente','Tranca Arcana','Levitação','Visão no Escuro','Nublar','Despedaçar','Sugestão','Teia','Imobilizar Pessoa','Alterar-se'], 3:['Bola de Fogo','Contra Mágica','Voo','Relâmpago','Velocidade','Imagem Maior','Respirar na Água','Forma Gasosa','Padrão Hipnótico','Lentidão'], 4:['Muralha de Fogo','Invisibilidade Maior','Tempestade de Gelo','Polimorfia','Porta Dimensional','Olho Arcano','Banimento'], 5:['Cone de Frio','Telecinese','Muralha de Força','Dominar Pessoa','Círculo de Teleporte','Imobilizar Monstro'], 6:['Desintegrar','Globo de Invulnerabilidade','Corrente de Relâmpagos'], 7:['Simulacro','Dedo da Morte','Teletransporte'], 8:['Palavra de Poder Atordoar','Dominar Monstro'], 9:['Parar o Tempo','Desejo'] } },
-  'Clérigo': { ability: 'sabedoria', mode: 'prepared', cantripsByLevel: {1:3,4:4,10:5}, maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9}, spells: { 0:['Luz','Chama Sagrada','Taumaturgia','Orientação','Resistência','Poupar os Moribundos'], 1:['Curar Ferimentos','Bênção','Escudo da Fé','Detectar Magia','Palavra Curativa','Comando','Proteção contra o Bem e o Mal','Santuário'], 2:['Arma Espiritual','Silêncio','Restauração Menor','Auxílio','Imobilizar Pessoa','Oração Curativa','Zona da Verdade'], 3:['Revivificar','Palavra Curativa em Massa','Remover Maldição','Luz do Dia','Proteção contra Energia','Enviar Mensagem'], 4:['Guardião da Fé','Liberdade de Movimento','Proteção contra a Morte','Banimento'], 5:['Restauração Maior','Golpe Flamejante','Curar Ferimentos em Massa','Praga'], 6:['Cura Completa','Barreira de Lâminas'], 7:['Ressurreição','Tempestade de Fogo'], 8:['Aura Sagrada'], 9:['Cura Completa em Massa','Ressurreição Verdadeira'] } },
-  Druida: { ability: 'sabedoria', mode: 'prepared', cantripsByLevel: {1:2,4:3,10:4}, maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9}, spells: { 0:['Orientação','Chicote de Espinhos','Produzir Chamas','Consertar','Rajada de Veneno'], 1:['Enfeitiçar Animal','Falar com Animais','Curar Ferimentos','Onda Trovejante','Bom Fruto','Névoa Obscurecente','Detectar Magia'], 2:['Esfera Flamejante','Passos sem Pegadas','Pele de Árvore','Lâmina Flamejante','Raio Lunar','Imobilizar Pessoa'], 3:['Conjurar Animais','Relâmpago','Respirar na Água','Crescimento de Plantas','Andar na Água'], 4:['Tempestade de Gelo','Muralha de Fogo','Polimorfia','Pele Rochosa','Dominar Fera'], 5:['Praga de Insetos','Restauração Maior','Comunhão com a Natureza','Muralha de Pedra'], 6:['Mover Terra','Cura Completa'], 7:['Tempestade de Fogo','Deslocamento Planar'], 8:['Explosão Solar'], 9:['Metamorfose Verdadeira','Precognição'] } },
-  Bardo: { ability: 'carisma', mode: 'known', cantripsByLevel: {1:2,4:3,10:4}, maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9}, knownByLevel: {1:4,2:5,3:6,4:7,5:8,6:9,7:10,8:11,9:12,10:14,11:15,12:15,13:16,14:18,15:19,16:19,17:20,18:22,19:22,20:22}, spells: { 0:['Zombaria Viciosa','Luz','Mãos Mágicas','Ilusão Menor','Mensagem','Prestidigitação'], 1:['Sussurros Dissonantes','Palavra Curativa','Sono','Compreender Idiomas','Enfeitiçar Pessoa','Curar Ferimentos','Fogo Feérico'], 2:['Invisibilidade','Despedaçar','Imobilizar Pessoa','Nublar','Detectar Pensamentos','Silêncio','Sugestão'], 3:['Padrão Hipnótico','Falar com Mortos','Medo','Enviar Mensagem','Crescimento de Plantas','Dispersar Magia'], 4:['Porta Dimensional','Invisibilidade Maior','Confusão','Polimorfia'], 5:['Restauração Maior','Dominar Pessoa','Imobilizar Monstro','Ressurreição Menor'], 6:['Dança Irresistível de Otto','Visão Verdadeira'], 7:['Palavra de Poder Dor','Teletransporte'], 8:['Palavra de Poder Atordoar'], 9:['Palavra de Poder Matar'] } },
-  Feiticeiro: { ability: 'carisma', mode: 'known', cantripsByLevel: {1:4,4:5,10:6}, maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9}, knownByLevel: {1:2,2:3,3:4,4:5,5:6,6:7,7:8,8:9,9:10,10:11,11:12,12:12,13:13,14:13,15:14,16:14,17:15,18:15,19:15,20:15}, spells: { 0:['Raio de Fogo','Luz','Prestidigitação','Toque Chocante','Rajada de Veneno','Raio de Gelo','Mensagem'], 1:['Mísseis Mágicos','Escudo','Sono','Mãos Flamejantes','Raio Adoecente','Orbe Cromática','Disfarçar-se'], 2:['Raio Ardente','Invisibilidade','Imagem Espelhada','Passo Nebuloso','Sugestão','Despedaçar'], 3:['Bola de Fogo','Relâmpago','Velocidade','Voo','Contra Mágica'], 4:['Muralha de Fogo','Tempestade de Gelo','Porta Dimensional','Banimento'], 5:['Cone de Frio','Imobilizar Monstro','Telecinese','Dominar Pessoa'], 6:['Desintegrar','Corrente de Relâmpagos'], 7:['Dedo da Morte','Teletransporte'], 8:['Palavra de Poder Atordoar'], 9:['Desejo','Parar o Tempo'] } },
-  Bruxo: { ability: 'carisma', mode: 'known', cantripsByLevel: {1:2,4:3,10:4}, maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:5,12:5,13:5,14:5,15:5,16:5,17:5,18:5,19:5,20:5}, knownByLevel: {1:2,2:3,3:4,4:5,5:6,6:7,7:8,8:9,9:10,10:10,11:11,12:11,13:12,14:12,15:13,16:13,17:14,18:14,19:15,20:15}, spells: { 0:['Rajada Mística','Ilusão Menor','Mãos Mágicas','Prestidigitação','Toque Chocante'], 1:['Armadura de Agathys','Enfeitiçar Pessoa','Compreender Idiomas','Repreensão Infernal','Proteção contra o Bem e o Mal'], 2:['Raio Ardente','Invisibilidade','Despedaçar','Sugestão','Imagem Espelhada'], 3:['Padrão Hipnótico','Medo','Voo','Contra Mágica','Dispersar Magia'], 4:['Muralha de Fogo','Porta Dimensional','Banimento','Invisibilidade Maior'], 5:['Segurar Monstro','Dominar Pessoa','Sonho','Telecinese'], 6:['Círculo da Morte','Visão Verdadeira'], 7:['Deslocamento Planar','Dedo da Morte'], 8:['Dominar Monstro'], 9:['Palavra de Poder Matar'] } },
-  Paladino: { ability: 'carisma', mode: 'preparedHalf', maxSpellLevelByLevel: {1:0,2:1,3:1,4:1,5:2,6:2,7:2,8:2,9:3,10:3,11:3,12:3,13:4,14:4,15:4,16:4,17:5,18:5,19:5,20:5}, spells: { 1:['Bênção','Comando','Curar Ferimentos','Escudo da Fé','Proteção contra o Bem e o Mal','Golpe Trovejante'], 2:['Restauração Menor','Arma Mágica','Encontrar Montaria','Zona da Verdade','Auxílio'], 3:['Remover Maldição','Luz do Dia','Revivificar','Aura de Vitalidade'], 4:['Banimento','Aura de Vida','Proteção contra a Morte'], 5:['Destruir o Mal','Restauração Maior','Círculo de Poder'] } },
-  Patrulheiro: { ability: 'sabedoria', mode: 'known', maxSpellLevelByLevel: {1:0,2:1,3:1,4:1,5:2,6:2,7:2,8:2,9:3,10:3,11:3,12:3,13:4,14:4,15:4,16:4,17:5,18:5,19:5,20:5}, knownByLevel: {1:0,2:2,3:3,4:3,5:4,6:4,7:5,8:5,9:6,10:6,11:7,12:7,13:8,14:8,15:9,16:9,17:10,18:10,19:11,20:11}, spells: { 1:['Marca do Caçador','Falar com Animais','Curar Ferimentos','Passos Longos','Detectar Magia'], 2:['Passos sem Pegadas','Restauração Menor','Silêncio','Cordão de Flechas','Visão no Escuro'], 3:['Conjurar Animais','Luz do Dia','Proteção contra Energia','Andar na Água'], 4:['Liberdade de Movimento','Localizar Criatura','Pele Rochosa'], 5:['Golpe do Vento','Comunhão com a Natureza','Muralha de Pedra'] } }
+  Mago: {
+    ability: 'inteligencia',
+    mode: 'prepared',
+    cantripsByLevel: {1:3,4:4,10:5},
+    maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9},
+    spells: {
+      0:['Luz','Mãos Mágicas','Prestidigitação','Raio de Gelo','Ilusão Menor','Toque Chocante','Raio de Fogo','Mensagem','Consertar','Lâmina Trovejante','Lâmina Ardente'],
+      1:['Armadura Arcana','Mísseis Mágicos','Escudo','Sono','Identificar','Detectar Magia','Compreender Idiomas','Disfarçar-se','Queda Suave','Enfeitiçar Pessoa','Névoa Obscurecente','Servo Invisível','Encontrar Familiar','Raio Adoecente','Mãos Flamejantes','Orbe Cromática','Salto','Ataque Certeiro','Escrita Ilusória'],
+      2:['Passo Nebuloso','Imagem Espelhada','Invisibilidade','Raio Ardente','Tranca Arcana','Levitação','Visão no Escuro','Nublar','Despedaçar','Sugestão','Teia','Imobilizar Pessoa','Alterar-se','Seta Ácida de Melf','Nuvem de Adagas','Detectar Pensamentos','Boca Mágica'],
+      3:['Bola de Fogo','Contra Mágica','Voo','Relâmpago','Velocidade','Imagem Maior','Respirar na Água','Forma Gasosa','Padrão Hipnótico','Lentidão','Dispersar Magia','Proteção contra Energia','Clarevidência'],
+      4:['Muralha de Fogo','Invisibilidade Maior','Tempestade de Gelo','Polimorfia','Porta Dimensional','Olho Arcano','Banimento','Metamorfose Rochosa','Assassino Fantasmagórico'],
+      5:['Cone de Frio','Telecinese','Muralha de Força','Dominar Pessoa','Círculo de Teleporte','Imobilizar Monstro','Contato com Outros Planos','Símbolo de Sonho'],
+      6:['Desintegrar','Globo de Invulnerabilidade','Corrente de Relâmpagos','Visão Verdadeira','Carne para Pedra'],
+      7:['Simulacro','Dedo da Morte','Teletransporte','Deslocamento Planar','Bola de Fogo Retardada'],
+      8:['Palavra de Poder Atordoar','Dominar Monstro','Explosão Solar','Labirinto'],
+      9:['Parar o Tempo','Desejo','Palavra de Poder Matar','Metamorfose Verdadeira']
+    }
+  },
+  'Clérigo': {
+    ability: 'sabedoria',
+    mode: 'prepared',
+    cantripsByLevel: {1:3,4:4,10:5},
+    maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9},
+    spells: {
+      0:['Luz','Chama Sagrada','Taumaturgia','Orientação','Resistência','Poupar os Moribundos'],
+      1:['Curar Ferimentos','Bênção','Escudo da Fé','Detectar Magia','Palavra Curativa','Comando','Proteção contra o Bem e o Mal','Santuário','Criar ou Destruir Água','Purificar Alimentos e Bebidas'],
+      2:['Arma Espiritual','Silêncio','Restauração Menor','Auxílio','Imobilizar Pessoa','Oração Curativa','Zona da Verdade','Proteção contra Veneno','Augúrio','Vínculo Protetor'],
+      3:['Revivificar','Palavra Curativa em Massa','Remover Maldição','Luz do Dia','Proteção contra Energia','Enviar Mensagem','Animar Mortos','Falar com Mortos','Criar Alimentos e Água'],
+      4:['Guardião da Fé','Liberdade de Movimento','Proteção contra a Morte','Banimento','Adivinhação','Localizar Criatura'],
+      5:['Restauração Maior','Golpe Flamejante','Curar Ferimentos em Massa','Praga','Coluna de Chamas','Comunhão','Santuário de Pedra'],
+      6:['Cura Completa','Barreira de Lâminas','Encontrar o Caminho','Aliado Planar'],
+      7:['Ressurreição','Tempestade de Fogo','Deslocamento Planar','Símbolo'],
+      8:['Aura Sagrada','Terremoto'],
+      9:['Cura Completa em Massa','Ressurreição Verdadeira','Portal']
+    }
+  },
+  Druida: {
+    ability: 'sabedoria',
+    mode: 'prepared',
+    cantripsByLevel: {1:2,4:3,10:4},
+    maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9},
+    spells: {
+      0:['Orientação','Chicote de Espinhos','Produzir Chamas','Consertar','Rajada de Veneno','Resistência'],
+      1:['Enfeitiçar Animal','Falar com Animais','Curar Ferimentos','Onda Trovejante','Bom Fruto','Névoa Obscurecente','Detectar Magia','Fogo Feérico','Salto','Passos Longos'],
+      2:['Esfera Flamejante','Passos sem Pegadas','Pele de Árvore','Lâmina Flamejante','Raio Lunar','Imobilizar Pessoa','Localizar Animais ou Plantas','Restauração Menor'],
+      3:['Conjurar Animais','Relâmpago','Respirar na Água','Crescimento de Plantas','Andar na Água','Chamar Relâmpago','Mesclar-se à Pedra'],
+      4:['Tempestade de Gelo','Muralha de Fogo','Polimorfia','Pele Rochosa','Dominar Fera','Liberdade de Movimento','Localizar Criatura'],
+      5:['Praga de Insetos','Restauração Maior','Comunhão com a Natureza','Muralha de Pedra','Passagem pelas Árvores','Reencarnar'],
+      6:['Mover Terra','Cura Completa','Muralha de Espinhos','Transporte via Plantas'],
+      7:['Tempestade de Fogo','Deslocamento Planar','Forma Etérea'],
+      8:['Explosão Solar','Terremoto'],
+      9:['Metamorfose Verdadeira','Precognição','Mudança de Forma']
+    }
+  },
+  Bardo: {
+    ability: 'carisma',
+    mode: 'known',
+    cantripsByLevel: {1:2,4:3,10:4},
+    maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9},
+    knownByLevel: {1:4,2:5,3:6,4:7,5:8,6:9,7:10,8:11,9:12,10:14,11:15,12:15,13:16,14:18,15:19,16:19,17:20,18:22,19:22,20:22},
+    spells: {
+      0:['Zombaria Viciosa','Luz','Mãos Mágicas','Ilusão Menor','Mensagem','Prestidigitação'],
+      1:['Sussurros Dissonantes','Palavra Curativa','Sono','Compreender Idiomas','Enfeitiçar Pessoa','Curar Ferimentos','Fogo Feérico','Identificar','Heroísmo'],
+      2:['Invisibilidade','Despedaçar','Imobilizar Pessoa','Nublar','Detectar Pensamentos','Silêncio','Sugestão','Aprimorar Habilidade','Arma Mágica'],
+      3:['Padrão Hipnótico','Falar com Mortos','Medo','Enviar Mensagem','Crescimento de Plantas','Dispersar Magia','Clarevidência','Glifo de Vigilância'],
+      4:['Porta Dimensional','Invisibilidade Maior','Confusão','Polimorfia','Liberdade de Movimento'],
+      5:['Restauração Maior','Dominar Pessoa','Imobilizar Monstro','Ressurreição Menor','Malogro','Animar Objetos'],
+      6:['Dança Irresistível de Otto','Visão Verdadeira','Sugestão em Massa'],
+      7:['Palavra de Poder Dor','Teletransporte','Forma Etérea'],
+      8:['Palavra de Poder Atordoar','Dominar Monstro'],
+      9:['Palavra de Poder Matar','Previsão']
+    }
+  },
+  Feiticeiro: {
+    ability: 'carisma',
+    mode: 'known',
+    cantripsByLevel: {1:4,4:5,10:6},
+    maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6,12:6,13:7,14:7,15:8,16:8,17:9,18:9,19:9,20:9},
+    knownByLevel: {1:2,2:3,3:4,4:5,5:6,6:7,7:8,8:9,9:10,10:11,11:12,12:12,13:13,14:13,15:14,16:14,17:15,18:15,19:15,20:15},
+    spells: {
+      0:['Raio de Fogo','Luz','Prestidigitação','Toque Chocante','Rajada de Veneno','Raio de Gelo','Mensagem','Mãos Mágicas'],
+      1:['Mísseis Mágicos','Escudo','Sono','Mãos Flamejantes','Raio Adoecente','Orbe Cromática','Disfarçar-se','Queda Suave','Névoa Obscurecente'],
+      2:['Raio Ardente','Invisibilidade','Imagem Espelhada','Passo Nebuloso','Sugestão','Despedaçar','Detectar Pensamentos','Nublar'],
+      3:['Bola de Fogo','Relâmpago','Velocidade','Voo','Contra Mágica','Padrão Hipnótico','Forma Gasosa'],
+      4:['Muralha de Fogo','Tempestade de Gelo','Porta Dimensional','Banimento','Invisibilidade Maior','Polimorfia'],
+      5:['Cone de Frio','Imobilizar Monstro','Telecinese','Dominar Pessoa','Névoa Mortal'],
+      6:['Desintegrar','Corrente de Relâmpagos','Globo de Invulnerabilidade'],
+      7:['Dedo da Morte','Teletransporte','Deslocamento Planar'],
+      8:['Palavra de Poder Atordoar','Dominar Monstro','Explosão Solar'],
+      9:['Desejo','Parar o Tempo','Palavra de Poder Matar']
+    }
+  },
+  Bruxo: {
+    ability: 'carisma',
+    mode: 'known',
+    cantripsByLevel: {1:2,4:3,10:4},
+    maxSpellLevelByLevel: {1:1,2:1,3:2,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:5,12:5,13:5,14:5,15:5,16:5,17:5,18:5,19:5,20:5},
+    knownByLevel: {1:2,2:3,3:4,4:5,5:6,6:7,7:8,8:9,9:10,10:10,11:11,12:11,13:12,14:12,15:13,16:13,17:14,18:14,19:15,20:15},
+    spells: {
+      0:['Rajada Mística','Ilusão Menor','Mãos Mágicas','Prestidigitação','Toque Chocante','Raio de Gelo'],
+      1:['Armadura de Agathys','Enfeitiçar Pessoa','Compreender Idiomas','Repreensão Infernal','Proteção contra o Bem e o Mal','Braços de Hadar','Hex'],
+      2:['Raio Ardente','Invisibilidade','Despedaçar','Sugestão','Imagem Espelhada','Passo Nebuloso','Escuridão'],
+      3:['Padrão Hipnótico','Medo','Voo','Contra Mágica','Dispersar Magia','Fome de Hadar'],
+      4:['Muralha de Fogo','Porta Dimensional','Banimento','Invisibilidade Maior','Blight'],
+      5:['Segurar Monstro','Dominar Pessoa','Sonho','Telecinese','Névoa Mortal'],
+      6:['Círculo da Morte','Visão Verdadeira','Carne para Pedra'],
+      7:['Deslocamento Planar','Dedo da Morte','Forma Etérea'],
+      8:['Dominar Monstro','Palavra de Poder Atordoar'],
+      9:['Palavra de Poder Matar','Aprisionamento']
+    }
+  },
+  Paladino: {
+    ability: 'carisma',
+    mode: 'preparedHalf',
+    maxSpellLevelByLevel: {1:0,2:1,3:1,4:1,5:2,6:2,7:2,8:2,9:3,10:3,11:3,12:3,13:4,14:4,15:4,16:4,17:5,18:5,19:5,20:5},
+    spells: {
+      1:['Bênção','Comando','Curar Ferimentos','Escudo da Fé','Proteção contra o Bem e o Mal','Golpe Trovejante','Heroísmo'],
+      2:['Restauração Menor','Arma Mágica','Encontrar Montaria','Zona da Verdade','Auxílio','Proteção contra Veneno'],
+      3:['Remover Maldição','Luz do Dia','Revivificar','Aura de Vitalidade','Proteção contra Energia'],
+      4:['Banimento','Aura de Vida','Proteção contra a Morte','Localizar Criatura'],
+      5:['Destruir o Mal','Restauração Maior','Círculo de Poder','Golpe Flamejante']
+    }
+  },
+  Patrulheiro: {
+    ability: 'sabedoria',
+    mode: 'known',
+    maxSpellLevelByLevel: {1:0,2:1,3:1,4:1,5:2,6:2,7:2,8:2,9:3,10:3,11:3,12:3,13:4,14:4,15:4,16:4,17:5,18:5,19:5,20:5},
+    knownByLevel: {1:0,2:2,3:3,4:3,5:4,6:4,7:5,8:5,9:6,10:6,11:7,12:7,13:8,14:8,15:9,16:9,17:10,18:10,19:11,20:11},
+    spells: {
+      1:['Marca do Caçador','Falar com Animais','Curar Ferimentos','Passos Longos','Detectar Magia','Golpe Constritor'],
+      2:['Passos sem Pegadas','Restauração Menor','Silêncio','Cordão de Flechas','Visão no Escuro','Localizar Animais ou Plantas'],
+      3:['Conjurar Animais','Luz do Dia','Proteção contra Energia','Andar na Água','Flecha Relampejante'],
+      4:['Liberdade de Movimento','Localizar Criatura','Pele Rochosa','Conjurar Seres da Floresta'],
+      5:['Golpe do Vento','Comunhão com a Natureza','Muralha de Pedra','Aljava Veloz']
+    }
+  }
 };
 
 // ------------------------------------------------------------
