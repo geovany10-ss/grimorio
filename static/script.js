@@ -631,6 +631,18 @@ function safeValue(value, fallback = '—') {
   return text || fallback;
 }
 
+
+function compactPrintText(value) {
+  const safe = safeValue(value, '—');
+  if (safe === '—') return safe;
+  return String(safe)
+    .split(/\n+/)
+    .map(item => item.trim())
+    .filter(Boolean)
+    .join(' • ');
+}
+
+
 function goToPage(pageName) {
   pages.forEach((page) => page.classList.toggle('active', page.id === `page-${pageName}`));
   navButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.page === pageName));
@@ -1186,8 +1198,8 @@ function updatePrintSheet() {
 
   printInspiracaoEl.textContent = '—';
   printProficienciaEl.textContent = `+${fields.proficiencia.value || 2}`;
-  printSavesEl.textContent = safeValue(fields.testes_resistencia.value);
-  printSkillsEl.textContent = safeValue(fields.pericias.value);
+  printSavesEl.textContent = compactPrintText(fields.testes_resistencia.value);
+  printSkillsEl.textContent = compactPrintText(fields.pericias.value);
   printPassivaEl.textContent = fields.sabedoria_passiva.value || '10';
   printCaEl.textContent = fields.ca.value || '10';
   printIniciativaEl.textContent = formatModifier(Number(fields.iniciativa.value || 0));
@@ -1198,16 +1210,15 @@ function updatePrintSheet() {
   printHitDiceEl.textContent = safeValue(fields.dados_vida.value);
   printDeathSuccessEl.textContent = '0';
   printDeathFailEl.textContent = '0';
-  printAttacksEl.textContent = safeValue(fields.ataques.value);
-  printEquipmentEl.textContent = `${armorLabel}
-${safeValue(fields.equipamentos.value)}`;
-  printTraitsEl.textContent = safeValue(fields.tracos_personalidade.value);
-  printIdealsEl.textContent = safeValue(fields.ideais.value);
-  printBondsEl.textContent = safeValue(fields.ligacoes.value);
-  printFlawsEl.textContent = safeValue(fields.defeitos.value);
-  printFeaturesEl.textContent = [safeValue(fields.racial_traits_auto.value,''), safeValue(fields.special_resistances_auto.value,''), safeValue(fields.caracteristicas_habilidades.value,'')].filter(Boolean).join('\n\n') || '—';
-  printLanguagesEl.textContent = [safeValue(fields.idiomas_auto.value,''), safeValue(fields.idiomas_proficiencias.value,'')].filter(Boolean).join('\n\n') || '—';
-  printHistoryEl.textContent = safeValue(fields.historia.value, 'Nenhuma história registrada.');
+  printAttacksEl.textContent = compactPrintText(fields.ataques.value);
+  printEquipmentEl.textContent = [armorLabel, compactPrintText(fields.equipamentos.value)].filter(Boolean).join(' • ');
+  printTraitsEl.textContent = compactPrintText(fields.tracos_personalidade.value);
+  printIdealsEl.textContent = compactPrintText(fields.ideais.value);
+  printBondsEl.textContent = compactPrintText(fields.ligacoes.value);
+  printFlawsEl.textContent = compactPrintText(fields.defeitos.value);
+  printFeaturesEl.textContent = [safeValue(fields.racial_traits_auto.value,''), safeValue(fields.special_resistances_auto.value,''), safeValue(fields.caracteristicas_habilidades.value,'')].filter(Boolean).join(' • ') || '—';
+  printLanguagesEl.textContent = [safeValue(fields.idiomas_auto.value,''), safeValue(fields.idiomas_proficiencias.value,'')].filter(Boolean).join(' • ') || '—';
+  printHistoryEl.textContent = compactPrintText(fields.historia.value || 'Nenhuma história registrada.');
   printSpellClassEl.textContent = getSpellConfig(fields.classe.value) ? safeValue(fields.classe.value) : '—';
   printSpellAbilityEl.textContent = getSpellConfig(fields.classe.value)?.ability ? ATTR_LABELS[getSpellConfig(fields.classe.value).ability] : '—';
   printSpellDcEl.textContent = getSpellcastingStats() ? String(getSpellcastingStats().saveDC) : '—';
@@ -1223,6 +1234,18 @@ ${safeValue(fields.equipamentos.value)}`;
   printSpell3El.textContent = byLevel[3].length ? byLevel[3].join(', ') : '—';
   printSpell4El.textContent = byLevel[4].length ? byLevel[4].join(', ') : '—';
   printSpell5El.textContent = byLevel[5].length ? byLevel[5].join(', ') : '—';
+
+  [
+    [printCantripsEl, byLevel[0].length],
+    [printSpell1El, byLevel[1].length],
+    [printSpell2El, byLevel[2].length],
+    [printSpell3El, byLevel[3].length],
+    [printSpell4El, byLevel[4].length],
+    [printSpell5El, byLevel[5].length]
+  ].forEach(([el, hasContent]) => {
+    if (!el || !el.parentElement) return;
+    el.parentElement.style.display = hasContent || el === printCantripsEl ? 'block' : 'none';
+  });
 }
 
 // ------------------------------------------------------------
