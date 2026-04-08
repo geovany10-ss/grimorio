@@ -7,7 +7,7 @@
 # em JSON, o que facilita evoluir o projeto sem quebrar o banco.
 # ============================================================
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request # type: ignore
 import json
 import sqlite3
 from datetime import datetime
