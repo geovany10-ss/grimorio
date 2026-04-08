@@ -62,6 +62,11 @@ const fields = {
   idiomas_proficiencias: document.getElementById('idiomas_proficiencias'),
   historia: document.getElementById('historia'),
   skill_proficiencies_input: document.getElementById('skill_proficiencies_input'),
+  skill_auto_info: document.getElementById('skill-auto-info'),
+  skill_selector: document.getElementById('skill-selector'),
+  racial_traits_auto: document.getElementById('racial_traits_auto'),
+  special_resistances_auto: document.getElementById('special_resistances_auto'),
+  idiomas_auto: document.getElementById('idiomas_auto'),
   armor_select: document.getElementById('armor_select'),
   shield_equipped: document.getElementById('shield_equipped'),
   armor_notes: document.getElementById('armor_notes'),
@@ -111,6 +116,49 @@ const sheetAttributesGridEl = document.getElementById('sheet-attributes-grid');
 const sheetSpellsEl = document.getElementById('sheet-spells');
 const sheetHistoryEl = document.getElementById('sheet-history');
 
+// Referências da página de impressão
+const printNomeEl = document.getElementById('print-nome');
+const printClasseNivelEl = document.getElementById('print-classe-nivel');
+const printAntecedenteEl = document.getElementById('print-antecedente');
+const printJogadorEl = document.getElementById('print-jogador');
+const printRacaEl = document.getElementById('print-raca');
+const printTendenciaEl = document.getElementById('print-tendencia');
+const printXpEl = document.getElementById('print-xp');
+const printAttrGridEl = document.getElementById('print-attr-grid');
+const printInspiracaoEl = document.getElementById('print-inspiracao');
+const printProficienciaEl = document.getElementById('print-proficiencia');
+const printSavesEl = document.getElementById('print-saves');
+const printSkillsEl = document.getElementById('print-skills');
+const printPassivaEl = document.getElementById('print-passiva');
+const printCaEl = document.getElementById('print-ca');
+const printIniciativaEl = document.getElementById('print-iniciativa');
+const printDeslocamentoEl = document.getElementById('print-deslocamento');
+const printPvTotalEl = document.getElementById('print-pv-total');
+const printPvAtualEl = document.getElementById('print-pv-atual');
+const printPvTempEl = document.getElementById('print-pv-temp');
+const printHitDiceEl = document.getElementById('print-hit-dice');
+const printDeathSuccessEl = document.getElementById('print-death-success');
+const printDeathFailEl = document.getElementById('print-death-fail');
+const printAttacksEl = document.getElementById('print-attacks');
+const printEquipmentEl = document.getElementById('print-equipment');
+const printTraitsEl = document.getElementById('print-traits');
+const printIdealsEl = document.getElementById('print-ideals');
+const printBondsEl = document.getElementById('print-bonds');
+const printFlawsEl = document.getElementById('print-flaws');
+const printFeaturesEl = document.getElementById('print-features');
+const printLanguagesEl = document.getElementById('print-languages');
+const printHistoryEl = document.getElementById('print-history');
+const printSpellClassEl = document.getElementById('print-spell-class');
+const printSpellAbilityEl = document.getElementById('print-spell-ability');
+const printSpellDcEl = document.getElementById('print-spell-dc');
+const printSpellAttackEl = document.getElementById('print-spell-attack');
+const printCantripsEl = document.getElementById('print-cantrips');
+const printSpell1El = document.getElementById('print-spell-1');
+const printSpell2El = document.getElementById('print-spell-2');
+const printSpell3El = document.getElementById('print-spell-3');
+const printSpell4El = document.getElementById('print-spell-4');
+const printSpell5El = document.getElementById('print-spell-5');
+
 // ------------------------------------------------------------
 // Estado simples da aplicação
 // ------------------------------------------------------------
@@ -134,7 +182,7 @@ const SUBRACE_OPTIONS = {
   'Anão': ['Anão da Colina','Anão da Montanha'],
   'Elfo': ['Alto Elfo','Elfo da Floresta','Drow'],
   'Halfling': ['Pés Leves','Robusto'],
-  'Draconato': [],
+  'Draconato': ['Draconato Vermelho','Draconato Azul','Draconato Branco','Draconato Preto','Draconato Verde','Draconato Dourado','Draconato Prateado','Draconato Bronze','Draconato Cobre','Draconato Latão'],
   'Gnomo': ['Gnomo da Floresta','Gnomo das Rochas'],
   'Meio-Elfo': [],
   'Meio-Orc': [],
@@ -185,6 +233,97 @@ const CLASS_SAVE_PROFICIENCIES = {
   'Monge': ['forca', 'destreza'],
   'Paladino': ['sabedoria', 'carisma'],
   'Patrulheiro': ['forca', 'destreza']
+};
+
+const CLASS_SKILL_RULES = {
+  'Bárbaro': { limit: 2, suggestions: ['Atletismo', 'Intimidação'] },
+  'Bardo': { limit: 3, suggestions: ['Atuação', 'Persuasão', 'Intuição'] },
+  'Bruxo': { limit: 2, suggestions: ['Arcanismo', 'Intimidação'] },
+  'Clérigo': { limit: 2, suggestions: ['Religião', 'Intuição'] },
+  'Druida': { limit: 2, suggestions: ['Natureza', 'Lidar com Animais'] },
+  'Feiticeiro': { limit: 2, suggestions: ['Arcanismo', 'Persuasão'] },
+  'Guerreiro': { limit: 2, suggestions: ['Atletismo', 'Intimidação'] },
+  'Ladino': { limit: 4, suggestions: ['Furtividade', 'Acrobacia', 'Investigação', 'Prestidigitação'] },
+  'Mago': { limit: 2, suggestions: ['Arcanismo', 'História'] },
+  'Monge': { limit: 2, suggestions: ['Acrobacia', 'Furtividade'] },
+  'Paladino': { limit: 2, suggestions: ['Persuasão', 'Intuição'] },
+  'Patrulheiro': { limit: 3, suggestions: ['Sobrevivência', 'Percepção', 'Lidar com Animais'] }
+};
+
+const FIXED_RACIAL_SKILLS = {
+  'Elfo': ['Percepção'],
+  'Alto Elfo': ['Percepção'],
+  'Elfo da Floresta': ['Percepção'],
+  'Drow': ['Percepção'],
+  'Meio-Orc': ['Intimidação']
+};
+
+const RACE_LANGUAGES = {
+  'Humano': 'Comum + 1 idioma extra à escolha',
+  'Anão': 'Comum, Anão',
+  'Elfo': 'Comum, Élfico',
+  'Halfling': 'Comum, Halfling',
+  'Draconato': 'Comum, Dracônico',
+  'Gnomo': 'Comum, Gnômico',
+  'Meio-Elfo': 'Comum, Élfico + 1 idioma extra à escolha',
+  'Meio-Orc': 'Comum, Orc',
+  'Tiefling': 'Comum, Infernal'
+};
+
+const RACIAL_FEATURES = {
+  'Humano': ['Versatilidade humana: +1 em todos os atributos.'],
+  'Anão': ['Visão no escuro.', 'Resiliência anã: vantagem contra veneno e resistência a dano de veneno.'],
+  'Elfo': ['Visão no escuro.', 'Ancestral feérico: vantagem contra ser enfeitiçado e magia não pode colocá-lo para dormir.', 'Transe.'],
+  'Halfling': ['Sortudo.', 'Bravura.', 'Agilidade halfling.'],
+  'Draconato': ['Ancestral dracônico e arma de sopro.'],
+  'Gnomo': ['Visão no escuro.', 'Esperteza gnômica: vantagem em testes de resistência de Int, Sab e Car contra magia.'],
+  'Meio-Elfo': ['Ancestral feérico.', 'Versatilidade de perícias.'],
+  'Meio-Orc': ['Visão no escuro.', 'Resistência implacável.', 'Ataques selvagens.'],
+  'Tiefling': ['Visão no escuro.', 'Resistência infernal: resistência a fogo.']
+};
+
+const SUBRACE_FEATURES = {
+  'Anão da Colina': ['Tenacidade anã: +1 PV por nível.'],
+  'Anão da Montanha': ['Treinamento anão em armaduras leves e médias.'],
+  'Alto Elfo': ['Truque extra de mago e treinamento com espada longa, espada curta, arco curto e arco longo.'],
+  'Elfo da Floresta': ['Deslocamento aumentado.', 'Máscara da Natureza.'],
+  'Drow': ['Sensibilidade à luz solar.', 'Magia drow.', 'Visão no escuro superior.'],
+  'Pés Leves': ['Furtividade natural.'],
+  'Robusto': ['Resiliência robusta contra veneno.'],
+  'Gnomo da Floresta': ['Ilusão menor.', 'Falar com pequenas bestas.'],
+  'Gnomo das Rochas': ['Conhecimento do artífice.', 'Engenhoca.'],
+  'Legado Infernal': ['Taumaturgia e magias infernais por nível.'],
+  'Draconato Vermelho': ['Resistência a fogo.'],
+  'Draconato Azul': ['Resistência a elétrico.'],
+  'Draconato Branco': ['Resistência a frio.'],
+  'Draconato Preto': ['Resistência a ácido.'],
+  'Draconato Verde': ['Resistência a veneno.'],
+  'Draconato Dourado': ['Resistência a fogo.'],
+  'Draconato Prateado': ['Resistência a frio.'],
+  'Draconato Bronze': ['Resistência a elétrico.'],
+  'Draconato Cobre': ['Resistência a ácido.'],
+  'Draconato Latão': ['Resistência a fogo.']
+};
+
+const SUBRACE_SPECIALS = {
+  'Drow': ['Visão no escuro 36 m.', 'Sensibilidade à luz solar.'],
+  'Elfo da Floresta': ['Máscara da Natureza.', 'Deslocamento 10,5 m.'],
+  'Tiefling': ['Resistência a fogo.']
+};
+
+const CLASS_STARTING_EQUIPMENT = {
+  'Bárbaro': 'Machado grande ou arma marcial corpo a corpo, duas machadinhas, mochila do explorador e quatro azagaias.',
+  'Bardo': 'Rapieira ou espada longa simples, pacote de artista, instrumento musical e armadura leve.',
+  'Bruxo': 'Besta leve, foco arcano, mochila do estudioso ou do explorador e armadura leve.',
+  'Clérigo': 'Símbolo sagrado, escudo, arma simples e armadura média ou leve conforme o domínio.',
+  'Druida': 'Escudo de madeira, foco druídico, arma simples e armadura não metálica.',
+  'Feiticeiro': 'Besta leve ou arma simples, foco arcano e mochila do explorador ou do estudioso.',
+  'Guerreiro': 'Armadura, escudo ou arma marcial, arma secundária e mochila do aventureiro.',
+  'Ladino': 'Rapieira ou espada curta, arco curto e aljava, ferramentas de ladrão e armadura leve.',
+  'Mago': 'Bordão ou adaga, foco arcano ou bolsa de componentes e grimório.',
+  'Monge': 'Espada curta ou arma simples, pacote do aventureiro e 10 dardos.',
+  'Paladino': 'Arma marcial, escudo, cinco azagaias e símbolo sagrado.',
+  'Patrulheiro': 'Armadura leve ou média, duas espadas curtas ou duas armas simples, arco longo e aljava.'
 };
 
 const ARMOR_CATALOG = {
@@ -265,7 +404,9 @@ const SUBRACE_BONUSES = {
   'Anão da Colina': { sabedoria:1 }, 'Anão da Montanha': { forca:2 }, 'Alto Elfo': { inteligencia:1 },
   'Elfo da Floresta': { sabedoria:1 }, 'Drow': { carisma:1 }, 'Pés Leves': { carisma:1 },
   'Robusto': { constituicao:1 }, 'Gnomo da Floresta': { destreza:1 }, 'Gnomo das Rochas': { constituicao:1 },
-  'Legado Infernal': {}
+  'Legado Infernal': {},
+  'Draconato Vermelho': {}, 'Draconato Azul': {}, 'Draconato Branco': {}, 'Draconato Preto': {}, 'Draconato Verde': {},
+  'Draconato Dourado': {}, 'Draconato Prateado': {}, 'Draconato Bronze': {}, 'Draconato Cobre': {}, 'Draconato Latão': {}
 };
 
 const SPELL_DAMAGE_DETAILS = {
@@ -601,6 +742,21 @@ function parseCommaList(value) {
   return String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
 }
 
+function uniqueList(items) {
+  return [...new Set(items.filter(Boolean))];
+}
+
+function getAutoSkillNames() {
+  return uniqueList([
+    ...(FIXED_RACIAL_SKILLS[fields.raca.value] || []),
+    ...(FIXED_RACIAL_SKILLS[fields.subraca.value] || [])
+  ]);
+}
+
+function getClassSkillRule(className) {
+  return CLASS_SKILL_RULES[className] || { limit: 0, suggestions: [] };
+}
+
 function isWeaponProficient(className, weaponName) {
   const rules = CLASS_WEAPON_PROFICIENCIES[className] || [];
   const weapon = WEAPON_CATALOG[weaponName];
@@ -681,6 +837,58 @@ function appendSelectedWeaponToAttacks() {
   updateSheetPreview();
 }
 
+function renderSkillSelector(savedNames = null) {
+  const autoNames = new Set(getAutoSkillNames());
+  const rule = getClassSkillRule(fields.classe.value);
+  const currentSaved = savedNames && savedNames.length ? savedNames : parseCommaList(fields.skill_proficiencies_input?.value);
+  const selectedSet = new Set(currentSaved.length ? currentSaved : [...autoNames, ...rule.suggestions]);
+
+  fields.skill_selector.innerHTML = '';
+  fields.skill_auto_info.textContent = `Classe ${fields.classe.value} • selecione até ${rule.limit} perícias de classe. Traços raciais automáticos ficam bloqueados.`;
+
+  Object.entries(SKILL_TO_ATTR).forEach(([skill, attrKey]) => {
+    const isAuto = autoNames.has(skill);
+    const checked = selectedSet.has(skill) || isAuto;
+    const wrapper = document.createElement('label');
+    wrapper.className = `skill-item${isAuto ? ' auto' : ''}`;
+    wrapper.innerHTML = `<input type="checkbox" class="skill-checkbox" value="${skill}" ${checked ? 'checked' : ''} ${isAuto ? 'disabled' : ''} />
+      <div><strong>${skill}</strong><small>${ATTR_LABELS[attrKey]}</small></div>`;
+    fields.skill_selector.appendChild(wrapper);
+  });
+
+  const sync = (changed = null) => {
+    const selected = Array.from(fields.skill_selector.querySelectorAll('.skill-checkbox:checked')).map((cb) => cb.value);
+    const manualSelected = selected.filter((name) => !autoNames.has(name));
+    if (rule.limit && manualSelected.length > rule.limit && changed) {
+      changed.checked = false;
+      setFeedback(`Você pode selecionar até ${rule.limit} perícias de classe para ${fields.classe.value}.`, true);
+    }
+    const finalSelected = Array.from(fields.skill_selector.querySelectorAll('.skill-checkbox:checked')).map((cb) => cb.value);
+    fields.skill_proficiencies_input.value = finalSelected.join(', ');
+    updateAutomaticSavesAndSkills();
+  };
+
+  fields.skill_selector.querySelectorAll('.skill-checkbox').forEach((cb) => cb.addEventListener('change', () => sync(cb)));
+  sync();
+}
+
+function getAutoLanguagesText() {
+  return RACE_LANGUAGES[fields.raca.value] || 'Comum';
+}
+
+function getAutoTraitsText() {
+  return uniqueList([...(RACIAL_FEATURES[fields.raca.value] || []), ...(SUBRACE_FEATURES[fields.subraca.value] || [])]).join('\n');
+}
+
+function getAutoSpecialResistancesText() {
+  return uniqueList([
+    ...(SUBRACE_SPECIALS[fields.raca.value] || []),
+    ...(SUBRACE_SPECIALS[fields.subraca.value] || []),
+    ...(fields.raca.value === 'Tiefling' ? ['Resistência a fogo.'] : []),
+    ...(fields.raca.value === 'Anão' ? ['Resistência a dano de veneno.'] : [])
+  ]).join('\n');
+}
+
 function updateAutomaticSavesAndSkills() {
   const attrs = getFinalAttributes();
   const prof = Number(fields.proficiencia.value || 2);
@@ -691,13 +899,21 @@ function updateAutomaticSavesAndSkills() {
   }).join('\n');
   fields.testes_resistencia.value = saveText;
 
-  const profSkills = new Set(parseCommaList(fields.skill_proficiencies_input?.value).map(normalizeName));
+  const selectedSkills = new Set(parseCommaList(fields.skill_proficiencies_input?.value).map(normalizeName));
   const skillsText = Object.entries(SKILL_TO_ATTR).map(([skill, attrKey]) => {
-    const proficient = profSkills.has(normalizeName(skill));
+    const proficient = selectedSkills.has(normalizeName(skill));
     const total = calculateModifier(attrs[attrKey]) + (proficient ? prof : 0);
     return `${skill} (${ATTR_LABELS[attrKey]}): ${formatModifier(total)}${proficient ? ' (prof.)' : ''}`;
   }).join('\n');
   fields.pericias.value = skillsText;
+
+  fields.racial_traits_auto.value = getAutoTraitsText();
+  fields.special_resistances_auto.value = getAutoSpecialResistancesText();
+  fields.idiomas_auto.value = getAutoLanguagesText();
+
+  if (!fields.equipamentos.value.trim() || fields.equipamentos.value.startsWith('Equipamento sugerido:')) {
+    fields.equipamentos.value = `Equipamento sugerido: ${CLASS_STARTING_EQUIPMENT[fields.classe.value] || 'Defina o equipamento inicial com o mestre.'}`;
+  }
 }
 
 function updateRaceBonusLog() {
@@ -719,7 +935,7 @@ function updateAutomaticFields() {
   fields.proficiencia.value = calculateProficiency(level);
   fields.vida_max.value = calculateHitPoints();
   if (!fields.vida_atual.value || Number(fields.vida_atual.value) <= 0) fields.vida_atual.value = fields.vida_max.value;
-  fields.ca.value = calculateArmorClass();
+  fields.ca.value = calculateArmorClassFromSelection();
   fields.iniciativa.value = calculateInitiative();
   fields.dados_vida.value = calculateHitDiceText();
   fields.sabedoria_passiva.value = calculatePassivePerception();
@@ -730,6 +946,18 @@ function updateAutomaticFields() {
 // ------------------------------------------------------------
 function getSpellcastingConfig(className) {
   return SPELL_DATA[className] || null;
+}
+
+function getSpellConfig(className) {
+  return getSpellcastingConfig(className);
+}
+
+function getSpellcastingStats() {
+  const config = getSpellcastingConfig(fields.classe.value);
+  if (!config) return null;
+  const prof = Number(fields.proficiencia.value || 2);
+  const abilityMod = calculateModifier(getFinalAttributes()[config.ability] || 10);
+  return { saveDC: 8 + prof + abilityMod, attackBonus: prof + abilityMod };
 }
 
 function getCantripsAllowed(className, level) {
@@ -921,12 +1149,95 @@ function updateSheetPreview() {
   sheetHistoryEl.textContent = `${armorLabel}
 Arma selecionada: ${fields.weapon_select.value || '—'}${fields.weapon_damage_preview.value ? ` • ${fields.weapon_damage_preview.value}` : ''}
 
+Traços raciais:
+${safeValue(fields.racial_traits_auto.value, '—')}
+
 ${safeValue(fields.historia.value, 'Nenhuma história adicionada ainda.')}`;
 
   previewVidaEl.textContent = fields.vida_max.value || '10';
   previewCaEl.textContent = fields.ca.value || '10';
   previewProfEl.textContent = `+${fields.proficiencia.value || '2'}`;
   previewPassivaEl.textContent = fields.sabedoria_passiva.value || '10';
+  updatePrintSheet();
+}
+
+function setPrintBoxState(element, value, emptyFallback = '—') {
+  if (!element) return;
+  const normalized = (value ?? '').toString().trim();
+  const finalValue = normalized || emptyFallback;
+  if ('textContent' in element) element.textContent = finalValue;
+  const box = element.closest('.print-box');
+  if (box) {
+    box.dataset.empty = finalValue === emptyFallback ? 'true' : 'false';
+    if (finalValue === emptyFallback && box.classList.contains('optional-print-box')) {
+      box.style.display = 'none';
+    } else {
+      box.style.display = '';
+    }
+  }
+}
+
+function updatePrintSheet() {
+  if (!printNomeEl) return;
+
+  const finalAttrs = getFinalAttributes();
+  const level = Number(fields.nivel.value || 1);
+  const armorLabel = fields.armor_select?.value ? `${fields.armor_select.value}${fields.shield_equipped.value === 'Sim' ? ' + Escudo' : ''}` : '—';
+
+  setPrintBoxState(printNomeEl, safeValue(fields.nome.value));
+  setPrintBoxState(printClasseNivelEl, `${safeValue(fields.classe.value)} ${level}`);
+  setPrintBoxState(printAntecedenteEl, safeValue(fields.antecedente.value));
+  setPrintBoxState(printJogadorEl, safeValue(fields.nome_jogador.value));
+  setPrintBoxState(printRacaEl, fields.subraca.value ? `${safeValue(fields.raca.value)} / ${fields.subraca.value}` : safeValue(fields.raca.value));
+  setPrintBoxState(printTendenciaEl, safeValue(fields.alinhamento.value));
+  setPrintBoxState(printXpEl, safeValue(fields.xp.value || '0'));
+
+  printAttrGridEl.innerHTML = '';
+  Object.entries(ATTR_LABELS).forEach(([key, label]) => {
+    const box = document.createElement('div');
+    box.className = 'print-box';
+    box.innerHTML = `<small>${label}</small><strong>${finalAttrs[key]} (${formatModifier(calculateModifier(finalAttrs[key]))})</strong>`;
+    printAttrGridEl.appendChild(box);
+  });
+
+  setPrintBoxState(printInspiracaoEl, '');
+  setPrintBoxState(printProficienciaEl, `+${fields.proficiencia.value || 2}`);
+  setPrintBoxState(printSavesEl, safeValue(fields.testes_resistencia.value));
+  setPrintBoxState(printSkillsEl, safeValue(fields.pericias.value));
+  setPrintBoxState(printPassivaEl, fields.sabedoria_passiva.value || '10');
+  setPrintBoxState(printCaEl, fields.ca.value || '10');
+  setPrintBoxState(printIniciativaEl, formatModifier(Number(fields.iniciativa.value || 0)));
+  setPrintBoxState(printDeslocamentoEl, safeValue(fields.deslocamento.value, '9 m'));
+  setPrintBoxState(printPvTotalEl, fields.vida_max.value || '10');
+  setPrintBoxState(printPvAtualEl, fields.vida_atual.value || '10');
+  setPrintBoxState(printPvTempEl, fields.vida_temp.value || '0');
+  setPrintBoxState(printHitDiceEl, safeValue(fields.dados_vida.value));
+  setPrintBoxState(printDeathSuccessEl, '0');
+  setPrintBoxState(printDeathFailEl, '0');
+  setPrintBoxState(printAttacksEl, safeValue(fields.ataques.value));
+  setPrintBoxState(printEquipmentEl, `${armorLabel}\n${safeValue(fields.equipamentos.value)}`);
+  setPrintBoxState(printTraitsEl, safeValue(fields.tracos_personalidade.value));
+  setPrintBoxState(printIdealsEl, safeValue(fields.ideais.value));
+  setPrintBoxState(printBondsEl, safeValue(fields.ligacoes.value));
+  setPrintBoxState(printFlawsEl, safeValue(fields.defeitos.value));
+  setPrintBoxState(printFeaturesEl, [safeValue(fields.racial_traits_auto.value,''), safeValue(fields.special_resistances_auto.value,''), safeValue(fields.caracteristicas_habilidades.value,'')].filter(Boolean).join('\n\n'));
+  setPrintBoxState(printLanguagesEl, [safeValue(fields.idiomas_auto.value,''), safeValue(fields.idiomas_proficiencias.value,'')].filter(Boolean).join('\n\n'));
+  setPrintBoxState(printHistoryEl, safeValue(fields.historia.value, 'Nenhuma história registrada.'));
+  setPrintBoxState(printSpellClassEl, getSpellConfig(fields.classe.value) ? safeValue(fields.classe.value) : '');
+  setPrintBoxState(printSpellAbilityEl, getSpellConfig(fields.classe.value)?.ability ? ATTR_LABELS[getSpellConfig(fields.classe.value).ability] : '');
+  setPrintBoxState(printSpellDcEl, getSpellcastingStats() ? String(getSpellcastingStats().saveDC) : '');
+  setPrintBoxState(printSpellAttackEl, getSpellcastingStats() ? formatModifier(getSpellcastingStats().attackBonus) : '');
+
+  const byLevel = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []};
+  currentSpellSelection.forEach((item) => {
+    if (byLevel[item.level]) byLevel[item.level].push(item.name);
+  });
+  setPrintBoxState(printCantripsEl, byLevel[0].length ? byLevel[0].join(', ') : '');
+  setPrintBoxState(printSpell1El, byLevel[1].length ? byLevel[1].join(', ') : '');
+  setPrintBoxState(printSpell2El, byLevel[2].length ? byLevel[2].join(', ') : '');
+  setPrintBoxState(printSpell3El, byLevel[3].length ? byLevel[3].join(', ') : '');
+  setPrintBoxState(printSpell4El, byLevel[4].length ? byLevel[4].join(', ') : '');
+  setPrintBoxState(printSpell5El, byLevel[5].length ? byLevel[5].join(', ') : '');
 }
 
 // ------------------------------------------------------------
@@ -1040,10 +1351,15 @@ function populateDashboardFilters() {
 // Formulário
 // ------------------------------------------------------------
 function updatePreview() {
+  updateArmorOptions();
+  updateWeaponOptions();
   updateAttributeModifiers();
   updateRaceBonusLog();
+  renderSkillSelector(parseCommaList(fields.skill_proficiencies_input.value));
   updateAutomaticFields();
+  updateAutomaticSavesAndSkills();
   renderSpellSelector(currentSpellSelection.map((item) => item.name));
+  updateWeaponPreview();
   updateSheetPreview();
 }
 
@@ -1114,6 +1430,9 @@ function collectFormData() {
     caracteristicas_habilidades: fields.caracteristicas_habilidades.value.trim(),
     idiomas_proficiencias: fields.idiomas_proficiencias.value.trim(),
     historia: fields.historia.value.trim(),
+    racial_traits_auto: fields.racial_traits_auto.value.trim(),
+    special_resistances_auto: fields.special_resistances_auto.value.trim(),
+    idiomas_auto: fields.idiomas_auto.value.trim(),
     skill_proficiencies_input: fields.skill_proficiencies_input.value.trim(),
     armor_select: fields.armor_select.value,
     shield_equipped: fields.shield_equipped.value,
@@ -1168,6 +1487,9 @@ function clearForm() {
   fields.caracteristicas_habilidades.value = '';
   fields.idiomas_proficiencias.value = '';
   fields.historia.value = '';
+  fields.racial_traits_auto.value = '';
+  fields.special_resistances_auto.value = '';
+  fields.idiomas_auto.value = '';
   fields.skill_proficiencies_input.value = '';
   fields.armor_select.value = '';
   fields.shield_equipped.value = 'Não';
@@ -1223,6 +1545,9 @@ function fillForm(payload) {
   fields.caracteristicas_habilidades.value = payload.caracteristicas_habilidades || '';
   fields.idiomas_proficiencias.value = payload.idiomas_proficiencias || '';
   fields.historia.value = payload.historia || '';
+  fields.racial_traits_auto.value = payload.racial_traits_auto || '';
+  fields.special_resistances_auto.value = payload.special_resistances_auto || '';
+  fields.idiomas_auto.value = payload.idiomas_auto || '';
   fields.skill_proficiencies_input.value = payload.skill_proficiencies_input || '';
   updateArmorOptions();
   fields.armor_select.value = payload.armor_select || fields.armor_select.value;
@@ -1310,7 +1635,9 @@ document.querySelectorAll('[data-go-page]').forEach((btn) => {
 document.getElementById('dashboard-refresh').addEventListener('click', loadCharacters);
 document.getElementById('btn-reset').addEventListener('click', () => { clearForm(); setFeedback('Nova ficha pronta.'); });
 document.getElementById('btn-load-dashboard').addEventListener('click', () => goToPage('dashboard'));
-document.getElementById('btn-print').addEventListener('click', () => window.print());
+document.getElementById('btn-print').addEventListener('click', () => { updatePrintSheet(); goToPage('print'); });
+document.getElementById('btn-print-now')?.addEventListener('click', () => { updatePrintSheet(); setTimeout(() => window.print(), 120); });
+document.getElementById('btn-back-editor')?.addEventListener('click', () => goToPage('editor'));
 document.getElementById('btn-roll-all').addEventListener('click', () => { rollAllAttributes(); setFeedback('Todos os atributos foram rolados.'); });
 
 document.querySelectorAll('.roll-attr').forEach((button) => {
@@ -1327,7 +1654,7 @@ fields.nivel.addEventListener('input', updatePreview);
 fields.armor_select.addEventListener('change', updatePreview);
 fields.shield_equipped.addEventListener('change', updatePreview);
 fields.weapon_select.addEventListener('change', () => { updateWeaponPreview(); updateSheetPreview(); });
-fields.skill_proficiencies_input.addEventListener('input', updatePreview);
+// skill_proficiencies_input é sincronizado pelo seletor visual de perícias.
 document.getElementById('btn-add-weapon').addEventListener('click', () => { appendSelectedWeaponToAttacks(); setFeedback('Arma adicionada em Ataques e Magias.'); });
 Object.values(fields).forEach((field) => {
   if (!field) return;

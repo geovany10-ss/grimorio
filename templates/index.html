@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grimório do Jogador</title>
+  <title>Grimório Definitivo</title>
   <style>
     :root {
       --bg: #0f0b0a;
@@ -33,7 +33,7 @@
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       padding: 16px 18px; border: 1px solid rgba(255,255,255,.06);
-      background: rgba(18,13,11,.92); backdrop-filter: blur(12px);
+      background: rgba(18,13,11,.985); backdrop-filter: none;
       border-radius: 22px; box-shadow: var(--shadow); position: sticky; top: 14px; z-index: 50; margin-bottom: 22px;
     }
 
@@ -58,8 +58,21 @@
     .btn-danger { background: rgba(208,90,87,.15); color: #ffd7d7; border: 1px solid rgba(208,90,87,.35); }
     .nav-btn.active { border-color: var(--accent); color: var(--accent-2); }
 
-    .page { display: none; animation: fadeIn .2s ease; }
+    .page { display: none; animation: fadeIn .2s ease; position: relative; isolation:isolate; }
     .page.active { display: block; }
+    .page > * { position: relative; z-index: 1; }
+    .page::before {
+      content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+      background-size:cover; background-position:center; background-repeat:no-repeat;
+      opacity:.24; filter:saturate(.95) contrast(1.02);
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.75), rgba(0,0,0,.18));
+      -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.75), rgba(0,0,0,.18));
+      border-radius: 24px;
+    }
+    #page-home::before { background-image:url("{{ url_for('static', filename='bg-home.jpg') }}"); }
+    #page-dashboard::before { background-image:url("{{ url_for('static', filename='bg-dashboard.jpg') }}"); }
+    #page-editor::before { background-image:url("{{ url_for('static', filename='bg-editor.jpg') }}"); }
+    #page-print::before { background-image:url("{{ url_for('static', filename='bg-print.jpg') }}"); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     .hero, .dashboard-grid, .editor-layout, .grid-2, .grid-3, .stats-grid, .sheet-grid, .attributes-grid { display: grid; gap: 16px; }
@@ -139,6 +152,14 @@
     .sheet-box div, .sheet-box p { white-space: pre-wrap; line-height: 1.5; }
 
     .spell-selector-section { max-height: 460px; overflow: auto; border-radius: 18px; }
+    .skill-selector-section { max-height: 340px; }
+    .skill-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .skill-item {
+      display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+      border-radius:14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+    }
+    .skill-item small { display:block; color: var(--muted); margin-top:4px; }
+    .skill-item.auto { border-color: rgba(200,155,60,.35); background: rgba(200,155,60,.08); }
     .spell-group { margin-bottom: 14px; }
     .spell-group h5 { color: var(--accent-2); margin-bottom: 10px; font-size: .95rem; }
     .spell-list { display: grid; gap: 8px; }
@@ -150,16 +171,6 @@
 
     .empty { padding: 16px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); color: var(--muted); }
 
-    @media print {
-      body { background: white; color: black; padding: 0; }
-      .topbar, .page:not(#page-editor) .panel, .editor-main { display: none !important; }
-      .page { display: none !important; }
-      #page-editor { display: block !important; }
-      .editor-layout { display: block; }
-      .sheet-preview { position: static; }
-      .sheet-panel, .sheet-box { box-shadow: none; background: white; color: black; border-color: #999; }
-      .sheet-section h4, .sheet-header h3 { color: black; }
-    }
 
     @media (max-width: 1100px) {
       .hero, .dashboard-grid, .editor-layout { grid-template-columns: 1fr; }
@@ -186,9 +197,11 @@
     }
 
     .topbar {
+      position: sticky;
+      overflow: hidden;
       background:
-        linear-gradient(180deg, rgba(30,18,14,.76), rgba(18,10,8,.88)),
-        url("{{ url_for('static', filename='wood-top.png') }}") center/cover no-repeat;
+        linear-gradient(90deg, rgba(22,12,9,.82) 0%, rgba(22,12,9,.64) 34%, rgba(22,12,9,.55) 60%, rgba(22,12,9,.74) 100%),
+        url("{{ url_for('static', filename='hero-clean.png') }}") center center / cover no-repeat;
       border: 1px solid rgba(179, 120, 76, .45);
       box-shadow: 0 18px 40px rgba(0,0,0,.45);
     }
@@ -272,12 +285,12 @@
       min-height: 280px;
       border-radius: 26px;
       overflow: hidden;
-      border: 1px solid rgba(157,100,64,.45);
-      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+      border: 1px solid rgba(157,100,64,.38);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
       margin-bottom: 24px;
       background:
-        linear-gradient(90deg, rgba(16,10,8,.88) 0%, rgba(16,10,8,.65) 36%, rgba(16,10,8,.18) 62%, rgba(16,10,8,.22) 100%),
-        url("{{ url_for('static', filename='hero-realistic.png') }}") center/cover no-repeat;
+        linear-gradient(90deg, rgba(16,10,8,.58) 0%, rgba(16,10,8,.38) 36%, rgba(16,10,8,.08) 62%, rgba(16,10,8,.12) 100%);
+      backdrop-filter: blur(1px);
     }
 
     .showcase-copy {
@@ -310,13 +323,24 @@
     #page-dashboard .panel,
     #page-home .panel {
       background:
-        linear-gradient(180deg, rgba(44,24,17,.93), rgba(24,14,10,.95));
+        linear-gradient(180deg, rgba(44,24,17,.56), rgba(24,14,10,.62));
+      backdrop-filter: blur(3px);
     }
 
     input, select, textarea {
       background: linear-gradient(180deg, rgba(29,17,13,.95), rgba(21,12,9,.98));
       border-color: rgba(160,103,66,.35);
       color: #f8ead3;
+    }
+
+    select, button {
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select option {
+      background: #2a160f;
+      color: #f7e6c8;
     }
 
     input::placeholder, textarea::placeholder {
@@ -355,6 +379,62 @@
       }
     }
 
+    
+    .print-sheet {
+      background: linear-gradient(180deg, rgba(248,238,213,.99), rgba(235,220,191,.99));
+      color: #312016; border-radius: 18px; padding: 12px; border: 1px solid rgba(120,71,39,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
+      font-size: 10px; line-height: 1.2;
+    }
+    .print-top-grid, .print-main-grid, .print-bottom-grid, .print-combat-grid, .print-spells-grid, .print-spells-levels, .print-attr-grid {
+      display:grid; gap:6px;
+    }
+    .print-top-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr 1fr 0.7fr; margin-bottom: 8px; }
+    .print-name { grid-column: span 1; }
+    .print-main-grid { grid-template-columns: 0.72fr 0.9fr 1fr; margin-bottom: 8px; align-items:start; }
+    .print-attr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .print-combat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 6px; }
+    .print-bottom-grid { grid-template-columns: 1fr 1fr; margin-bottom: 8px; }
+    .print-spells-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 6px; }
+    .print-spells-levels { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .print-box {
+      background: rgba(255,255,255,.34); border: 1px solid rgba(120,71,39,.18); border-radius: 10px; padding: 6px 7px;
+      min-height: 34px;
+    }
+    .print-box small { display:block; font-size:8.8px; color:#6e5541; margin-bottom:3px; text-transform:uppercase; letter-spacing:.03em; }
+    .print-box strong { font-size: 11px; }
+    .print-box div { white-space: pre-wrap; line-height: 1.2; font-size: 9.4px; }
+
+    @media (max-width: 1100px) {
+      .print-top-grid, .print-main-grid, .print-bottom-grid, .print-spells-grid, .print-spells-levels, .print-combat-grid { grid-template-columns: 1fr; }
+      .print-name { grid-column: auto; }
+      .print-attr-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @page { size: A4 portrait; margin: 12mm 6mm 8mm 6mm; }
+
+    @media print {
+      html, body { background:white !important; }
+      body { padding:0 !important; margin:0 !important; color:#2f1b12 !important; }
+      .topbar, #page-home, #page-dashboard, #page-editor { display:none !important; }
+      .page { display:none !important; }
+      #page-print { display:block !important; }
+      #page-print::before { display:none !important; }
+      #page-print .panel { display:block !important; border:none !important; background:white !important; box-shadow:none !important; }
+      #page-print .panel-header, #page-print .actions { display:none !important; }
+      #page-print .panel-body { padding:0 !important; }
+      .print-sheet, .print-box { box-shadow:none !important; break-inside: avoid; page-break-inside: avoid; }
+      .print-sheet { display:block !important; background:white !important; color:#2f1b12 !important; border:none !important; padding: 8mm 4px 4px 4px !important; font-size: 9px !important; }
+      .print-top-grid, .print-main-grid, .print-bottom-grid, .print-spells-grid, .print-spells-levels, .print-combat-grid { gap:4px !important; margin-bottom:4px !important; }
+      .print-box { background:white !important; border:1px solid #b7a08a !important; border-radius: 6px !important; padding:6px 7px !important; min-height: 28px !important; }
+      .print-box small, .print-box div, .print-box strong { color:#2f1b12 !important; }
+      .print-box small { font-size: 7.4px !important; margin-bottom: 2px !important; }
+      .print-box strong { font-size: 9.8px !important; }
+      .print-box div { font-size: 7.8px !important; line-height: 1.12 !important; }
+      #print-skills, #print-saves, #print-features, #print-history, #print-equipment, #print-languages, #print-attacks { max-height: none !important; }
+    }
+
+
   </style>
 </head>
 <body>
@@ -363,15 +443,16 @@
       <div class="brand">
         <div class="brand-mark">📖</div>
         <div>
-          <h1>Grimório do Jogador</h1>
-          <p>Crie, organize e preserve os heróis da sua campanha.</p>
+          <h1>Grimório Definitivo</h1>
+          <p>Seu acervo de fichas para campanhas de D&D 5e.</p>
         </div>
       </div>
 
       <nav class="nav-links">
         <button class="nav-btn active" data-page="home">Início</button>
         <button class="nav-btn" data-page="dashboard">Dashboard</button>
-        <button class="nav-btn" data-page="editor">Criar Ficha</button>
+        <button class="nav-btn" data-page="editor">Nova Ficha</button>
+        <button class="nav-btn" data-page="print">Impressão</button>
       </nav>
     </header>
 
@@ -380,66 +461,65 @@
       <div class="showcase-banner">
         <div class="showcase-copy">
           <div class="eyebrow">🔥 Grimório Definitivo</div>
-          <h2>Forje heróis à luz da tocha — antes que o dragão desperte.</h2>
+          <h2>Entre na caverna. O dragão já está acordado.</h2>
           <p>
-            Reúna suas fichas, registre magias, armas, armaduras e histórias em um grimório
-            com visual de fantasia sombria. Cada aventureiro salvo aqui volta pronto para a próxima campanha.
+            Em Dungeons & Dragons, cada ficha é o primeiro passo de uma lenda. Antes do aço encontrar a escama,
+            antes da magia romper a escuridão e antes da mesa cair na gargalhada por causa de um dado cruel,
+            existe um nome, uma história e uma escolha. O Grimório Definitivo foi criado para guardar tudo isso.
           </p>
-          <div class="hero-actions" style="margin-top:18px;">
-            <button class="btn-primary" data-go-page="editor">Nova ficha</button>
-            <button class="btn-secondary" data-go-page="dashboard">Abrir dashboard</button>
-          </div>
         </div>
       </div>
 
-      <div class="hero">
-        <div class="hero-panel">
-          <div class="eyebrow">✨ Bem-vindo ao Grimório do Jogador</div>
-          <h2>Antes de enfrentar dragões, todo herói precisa de um nome.</h2>
-          <p>
-            Nas bibliotecas antigas do mundo, dizem que cada aventureiro deixa um eco nas páginas do destino.
-            O Grimório do Jogador nasceu para guardar esses ecos: guerreiros juramentados, magos imprudentes,
-            druidas silenciosos, bardos insolentes e todos os heróis que ainda não existem — mas já esperam por você.
-            Aqui você cria sua ficha, acompanha suas magias, salva seus personagens e retorna sempre que a campanha chamar.
-          </p>
-          <div class="hero-actions" style="margin-top:16px;">
-            <button class="btn-primary" data-go-page="editor">Criar novo personagem</button>
-            <button class="btn-secondary" data-go-page="dashboard">Abrir dashboard</button>
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>O mundo além da tocha</h2>
+            <p>Uma introdução para quem está começando a jornada.</p>
+          </div>
+          <div class="panel-body">
+            <p class="muted">
+              Nos corredores das masmorras, nas tavernas esfumaçadas e sob o rugido de dragões antigos, heróis são feitos
+              de escolhas pequenas: qual arma carregar, qual magia preparar, quando confiar, quando fugir e quando desafiar
+              o impossível. Criar uma ficha não é preencher um formulário — é acender a centelha de um aventureiro.
+            </p>
+            <p class="muted" style="margin-top:12px;">
+              Aqui você registra atributos, perícias, armaduras, magias, equipamentos e a história que dá vida ao personagem.
+              Depois, o Grimório guarda tudo no dashboard para que sua campanha continue sempre do ponto onde a aventura parou.
+            </p>
           </div>
         </div>
 
-        <div class="hero-panel hero-illustration-wrap">
-          <img class="hero-illustration" src="{{ url_for('static', filename='hero-realistic.png') }}" alt="Aventureiros entrando em uma caverna enquanto os olhos de um dragão surgem na escuridão." />
-          <div class="stats-grid">
-            <div class="stat-card"><small>Personagens salvos</small><strong id="home-total">0</strong></div>
-            <div class="stat-card"><small>Média de nível</small><strong id="home-average">0</strong></div>
-            <div class="stat-card"><small>Classe mais usada</small><strong id="home-top-class">—</strong></div>
-            <div class="stat-card"><small>Raça mais usada</small><strong id="home-top-race">—</strong></div>
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Resumo do Grimório</h2>
+            <p>Visão rápida do seu acervo de personagens.</p>
           </div>
-          <div class="panel">
-            <div class="panel-header"><h2>O que o site já faz</h2></div>
-            <div class="panel-body">
-              <p class="muted">• Página inicial com introdução do projeto e arte temática.</p>
-              <p class="muted">• Dashboard com personagens salvos e busca por fichas.</p>
-              <p class="muted">• Editor com rolagem 4d6, raças, sub-raças, tendência, armas, armaduras e cálculos automáticos.</p>
-              <p class="muted">• Seleção de magias diretamente no editor para classes conjuradoras.</p>
-              <p class="muted">• Controle de limites por classe e nível para truques, magias conhecidas ou preparadas e espaços de magia.</p>
+          <div class="panel-body">
+            <div class="stats-grid">
+              <div class="stat-card"><small>Personagens salvos</small><strong id="home-total">0</strong></div>
+              <div class="stat-card"><small>Média de nível</small><strong id="home-average">0</strong></div>
+              <div class="stat-card"><small>Classe mais usada</small><strong id="home-top-class">—</strong></div>
+              <div class="stat-card"><small>Raça mais usada</small><strong id="home-top-race">—</strong></div>
+            </div>
+            <div class="helper-box" style="margin-top:16px;">
+              • Dashboard para acessar fichas salvas.
+              
+              • Editor com armas, armaduras, perícias, testes de resistência e seleção de magias.
+              
+              • Tela de impressão inspirada na ficha oficial de D&D 5e.
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="page" id="page-dashboard">
+<section class="page" id="page-dashboard">
 
       <div class="showcase-banner">
         <div class="showcase-copy">
           <div class="eyebrow">🏰 Dashboard do Grimório</div>
           <h2>Seus aventureiros aguardam a próxima incursão.</h2>
-          <p>
-            Consulte personagens salvos, edite fichas antigas e mantenha seu grupo organizado
-            em um acervo digno de uma mesa épica de D&D.
-          </p>
+          <p>Consulte personagens salvos, edite fichas antigas e mantenha o grupo organizado em um acervo digno de uma campanha épica.</p>
         </div>
       </div>
 
@@ -551,9 +631,21 @@
                 <div class="field"><label for="ideais">Ideais</label><textarea id="ideais"></textarea></div>
                 <div class="field"><label for="ligacoes">Ligações</label><textarea id="ligacoes"></textarea></div>
                 <div class="field"><label for="defeitos">Defeitos</label><textarea id="defeitos"></textarea></div>
-                <div class="field full"><label for="skill_proficiencies_input">Perícias proficientes (separe por vírgula)</label><input id="skill_proficiencies_input" type="text" placeholder="Ex.: Percepção, Atletismo, Furtividade" /></div>
+                <div class="field full">
+                  <label>Perícias proficientes</label>
+                  <input id="skill_proficiencies_input" type="hidden" />
+                  <div class="helper-box" id="skill-auto-info">Proficiências automáticas de raça e classe aparecerão aqui.</div>
+                  <div class="panel spell-selector-section skill-selector-section">
+                    <div class="panel-body">
+                      <div id="skill-selector" class="skill-grid"></div>
+                    </div>
+                  </div>
+                </div>
                 <div class="field full"><label for="testes_resistencia">Testes de Resistência</label><textarea id="testes_resistencia" placeholder="Gerado automaticamente"></textarea></div>
                 <div class="field full"><label for="pericias">Perícias</label><textarea id="pericias" placeholder="Gerado automaticamente"></textarea></div>
+                <div class="field full"><label for="racial_traits_auto">Traços raciais automáticos</label><textarea id="racial_traits_auto" readonly placeholder="Gerado automaticamente"></textarea></div>
+                <div class="field full"><label for="special_resistances_auto">Resistências e sentidos especiais</label><textarea id="special_resistances_auto" readonly placeholder="Gerado automaticamente"></textarea></div>
+                <div class="field full"><label for="idiomas_auto">Idiomas automáticos</label><textarea id="idiomas_auto" readonly placeholder="Gerado automaticamente"></textarea></div>
                 <div class="field"><label for="weapon_select">Arma</label><select id="weapon_select"></select></div>
                 <div class="field"><label for="weapon_attack_preview">Ataque da arma</label><input id="weapon_attack_preview" type="text" readonly /></div>
                 <div class="field"><label for="weapon_damage_preview">Dano da arma</label><input id="weapon_damage_preview" type="text" readonly /></div>
@@ -619,6 +711,91 @@
         </aside>
       </div>
     </section>
+
+    <section class="page" id="page-print">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Ficha para impressão</h2>
+          <p>Layout inspirado na ficha oficial de D&D 5e, adaptado ao Grimório Definitivo.</p>
+        </div>
+        <div class="panel-body">
+          <div class="actions" style="margin-bottom:18px;">
+            <button type="button" class="btn-secondary" id="btn-back-editor">Voltar ao editor</button>
+            <button type="button" class="btn-primary" id="btn-print-now">Imprimir / Salvar PDF</button>
+          </div>
+
+          <div id="print-sheet" class="print-sheet">
+            <div class="print-top-grid">
+              <div class="print-box print-name"><small>Nome do personagem</small><strong id="print-nome">—</strong></div>
+              <div class="print-box optional-print-box"><small>Classe e nível</small><strong id="print-classe-nivel">—</strong></div>
+              <div class="print-box optional-print-box"><small>Antecedente</small><strong id="print-antecedente">—</strong></div>
+              <div class="print-box optional-print-box"><small>Nome do jogador</small><strong id="print-jogador">—</strong></div>
+              <div class="print-box optional-print-box"><small>Raça</small><strong id="print-raca">—</strong></div>
+              <div class="print-box optional-print-box"><small>Tendência</small><strong id="print-tendencia">—</strong></div>
+              <div class="print-box optional-print-box"><small>XP</small><strong id="print-xp">0</strong></div>
+            </div>
+
+            <div class="print-main-grid">
+              <div class="print-left-col">
+                <div id="print-attr-grid" class="print-attr-grid"></div>
+                <div class="print-box optional-print-box"><small>Inspiração</small><strong id="print-inspiracao">—</strong></div>
+                <div class="print-box optional-print-box"><small>Bônus de proficiência</small><strong id="print-proficiencia">+2</strong></div>
+                <div class="print-box optional-print-box"><small>Testes de resistência</small><div id="print-saves">—</div></div>
+                <div class="print-box optional-print-box"><small>Perícias</small><div id="print-skills">—</div></div>
+                <div class="print-box optional-print-box"><small>Sabedoria passiva (Percepção)</small><strong id="print-passiva">10</strong></div>
+              </div>
+
+              <div class="print-center-col">
+                <div class="print-combat-grid">
+                  <div class="print-box optional-print-box"><small>CA</small><strong id="print-ca">10</strong></div>
+                  <div class="print-box optional-print-box"><small>Iniciativa</small><strong id="print-iniciativa">+0</strong></div>
+                  <div class="print-box optional-print-box"><small>Desloc.</small><strong id="print-deslocamento">9 m</strong></div>
+                </div>
+                <div class="print-box"><small>PV Totais</small><strong id="print-pv-total">10</strong></div>
+                <div class="print-box"><small>Pontos de vida atuais</small><strong id="print-pv-atual">10</strong></div>
+                <div class="print-box"><small>Pontos de vida temporários</small><strong id="print-pv-temp">0</strong></div>
+                <div class="print-combat-grid">
+                  <div class="print-box"><small>Dados de vida</small><strong id="print-hit-dice">1d10</strong></div>
+                  <div class="print-box"><small>Sucessos</small><strong id="print-death-success">0</strong></div>
+                  <div class="print-box"><small>Fracassos</small><strong id="print-death-fail">0</strong></div>
+                </div>
+                <div class="print-box"><small>Ataques e magias</small><div id="print-attacks">—</div></div>
+                <div class="print-box"><small>Equipamento</small><div id="print-equipment">—</div></div>
+              </div>
+
+              <div class="print-right-col">
+                <div class="print-box optional-print-box"><small>Traços de personalidade</small><div id="print-traits">—</div></div>
+                <div class="print-box optional-print-box"><small>Ideais</small><div id="print-ideals">—</div></div>
+                <div class="print-box optional-print-box"><small>Ligações</small><div id="print-bonds">—</div></div>
+                <div class="print-box optional-print-box"><small>Defeitos</small><div id="print-flaws">—</div></div>
+                <div class="print-box"><small>Características e habilidades</small><div id="print-features">—</div></div>
+              </div>
+            </div>
+
+            <div class="print-bottom-grid">
+              <div class="print-box"><small>Idiomas e outras proficiências</small><div id="print-languages">—</div></div>
+              <div class="print-box"><small>História do personagem</small><div id="print-history">—</div></div>
+            </div>
+
+            <div class="print-spells-grid">
+              <div class="print-box optional-print-box"><small>Classe de conjurador</small><strong id="print-spell-class">—</strong></div>
+              <div class="print-box optional-print-box"><small>Habilidade chave</small><strong id="print-spell-ability">—</strong></div>
+              <div class="print-box optional-print-box"><small>CD do TR</small><strong id="print-spell-dc">—</strong></div>
+              <div class="print-box optional-print-box"><small>Bônus de ataque</small><strong id="print-spell-attack">—</strong></div>
+            </div>
+            <div class="print-spells-levels">
+              <div class="print-box optional-print-box"><small>Truques</small><div id="print-cantrips">—</div></div>
+              <div class="print-box optional-print-box"><small>1º nível</small><div id="print-spell-1">—</div></div>
+              <div class="print-box optional-print-box"><small>2º nível</small><div id="print-spell-2">—</div></div>
+              <div class="print-box optional-print-box"><small>3º nível</small><div id="print-spell-3">—</div></div>
+              <div class="print-box optional-print-box"><small>4º nível</small><div id="print-spell-4">—</div></div>
+              <div class="print-box optional-print-box"><small>5º nível</small><div id="print-spell-5">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
